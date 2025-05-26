@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace PlantandBiologyRecognition.DAL.Repositories.Interfaces
 {
-    internal interface IGenericRepositoryFactory
+    public interface IGenericRepositoryFactory
     {
+        IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : class;
+
     }
 }
