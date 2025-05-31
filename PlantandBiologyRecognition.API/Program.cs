@@ -1,15 +1,26 @@
+using Microsoft.EntityFrameworkCore;
+using PlantandBiologyRecognition.BLL.Services.Implements;
+using PlantandBiologyRecognition.BLL.Services.Interfaces;
+using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Repositories.Implements;
+using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
+using AutoMapper;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Ensure services are registered before building the host
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+RegisterApplicationServices();
+ConfigureDatabase();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -17,9 +28,29 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
+
+void RegisterApplicationServices()
+{
+    // Register your service so it can resolve dependencies
+    builder.Services.AddScoped<IAccountService, AccountService>();
+}
+
+
+void ConfigureDatabase()
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        options.UseNpgsql(builder.Configuration.GetConnectionString("SupaBaseConnection"), 
+            npgsqlOptionsAction: sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorCodesToAdd: null);
+            });
+    });
+}
+
