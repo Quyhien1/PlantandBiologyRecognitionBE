@@ -4,12 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 
 namespace PlantandBiologyRecognition.DAL.Repositories.Implements
 {
-    public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : //ClaimRequestDbContext
+    public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : AppDbContext
     {
         public TContext Context { get; }
         private Dictionary<Type, object> _repositories;
