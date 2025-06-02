@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
-using PlantandBiologyRecognition.DAL.Payload.Request;
-using PlantandBiologyRecognition.DAL.Payload.Respond;
+using PlantandBiologyRecognition.DAL.Payload.Request.Account;
+using PlantandBiologyRecognition.DAL.Payload.Respond.Account;
 
 namespace PlantandBiologyRecognition.API.Controllers
 {
