@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using PlantandBiologyRecognition.DAL.Models;
-using PlantandBiologyRecognition.DAL.Payload.Request;
-using PlantandBiologyRecognition.DAL.Payload.Respond;
+using PlantandBiologyRecognition.DAL.Payload.Request.Account;
+using PlantandBiologyRecognition.DAL.Payload.Respond.Account;
 namespace PlantandBiologyRecognition.DAL.Mapper
 {
     public class AccountMapper : Profile

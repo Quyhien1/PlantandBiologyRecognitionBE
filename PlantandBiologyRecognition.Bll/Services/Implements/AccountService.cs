@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Models;
-using PlantandBiologyRecognition.DAL.Payload.Request;
-using PlantandBiologyRecognition.DAL.Payload.Respond;
+using PlantandBiologyRecognition.DAL.Payload.Request.Account;
+using PlantandBiologyRecognition.DAL.Payload.Respond.Account;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 
 namespace PlantandBiologyRecognition.BLL.Services.Implements

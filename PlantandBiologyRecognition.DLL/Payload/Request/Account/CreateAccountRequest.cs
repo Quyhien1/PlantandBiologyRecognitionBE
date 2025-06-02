@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-namespace PlantandBiologyRecognition.DAL.Payload.Request
+namespace PlantandBiologyRecognition.DAL.Payload.Request.Account
 {
     public class CreateAccountRequest
     {

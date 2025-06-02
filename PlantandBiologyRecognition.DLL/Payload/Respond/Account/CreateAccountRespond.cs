@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-namespace PlantandBiologyRecognition.DAL.Payload.Respond
+namespace PlantandBiologyRecognition.DAL.Payload.Respond.Account
 {
     public class CreateAccountRespond
     {
