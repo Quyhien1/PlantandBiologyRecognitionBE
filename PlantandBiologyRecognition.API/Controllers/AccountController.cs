@@ -15,7 +15,7 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _accountService = accountService;
         }
-        [HttpPost(ApiEndPointConstant.Account.AccountEndPoint)]
+        [HttpPost(ApiEndPointConstant.Account.CreateAccount)]
         [ProducesResponseType(typeof(CreateAccountRespond), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest createAccountRequest)
         {
