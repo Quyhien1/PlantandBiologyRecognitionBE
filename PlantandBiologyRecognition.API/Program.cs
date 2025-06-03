@@ -1,15 +1,15 @@
+using System.Text.Json.Serialization;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Repositories.Implements;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
-using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Ensure services are registered before building the host
-builder.Services.AddControllers();
 RegisterApplicationServices();
 ConfigureDatabase();
 
@@ -18,6 +18,11 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 var app = builder.Build();
 
@@ -26,7 +31,16 @@ var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
 //}
-
+app.UseCors(options =>
+{
+    options.SetIsOriginAllowed(origin =>
+       origin.StartsWith("http://localhost:") ||
+       origin.StartsWith("https://localhost:") ||
+       origin.EndsWith(".vercel.app"))
+          .AllowAnyMethod()
+          .AllowAnyHeader()
+          .AllowCredentials();
+});
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
