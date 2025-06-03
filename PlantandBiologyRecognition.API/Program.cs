@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Models;
@@ -10,21 +11,24 @@ using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Ensure services are registered before building the host
-RegisterApplicationServices();
+ConfigureServices();
 ConfigureDatabase();
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
-builder.Services.AddControllers()
+ConfigureSwagger();
+var app = builder.Build();
+void ConfigureServices()
+{
+    builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
+    RegisterApplicationServices();
+}
 
-var app = builder.Build();
 
 //if (app.Environment.IsDevelopment())
 //{
@@ -52,8 +56,19 @@ void RegisterApplicationServices()
     builder.Services.AddScoped<IAccountService, AccountService>();
 }
 
-
-void ConfigureDatabase()
+void ConfigureSwagger()
+{
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "PlantandBiologyRecognition.API",
+            Version = "v1",
+            Description = "A PlantandBiologyRecognition System Project"
+        });
+    });
+}
+    void ConfigureDatabase()
 {
     builder.Services.AddDbContext<AppDbContext>(options =>
     {
