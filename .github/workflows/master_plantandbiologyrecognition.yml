@@ -53,6 +53,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'PlantandBiologyRecognition'
-          slot-name: 'deployment'
+          slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C6E370D462F1487D84C1E0A87A60A62B }}
