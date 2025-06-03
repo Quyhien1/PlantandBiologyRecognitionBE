@@ -4,6 +4,7 @@ using PlantandBiologyRecognition.API.Constants;
 namespace PlantandBiologyRecognition.API.Controllers
 {
     [Route(ApiEndPointConstant.ApiEndPoint)]
+    [ApiController]
     public class BaseController<T> : ControllerBase where T : BaseController<T>
     {
         protected ILogger<T> _logger;
