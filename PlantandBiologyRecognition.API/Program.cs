@@ -10,7 +10,6 @@ using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Ensure services are registered before building the host
-builder.Services.AddControllers();
 RegisterApplicationServices();
 ConfigureDatabase();
 
