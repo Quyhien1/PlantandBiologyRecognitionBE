@@ -32,19 +32,10 @@ void ConfigureServices()
 
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 //}
-app.UseCors(options =>
-{
-    options.SetIsOriginAllowed(origin =>
-       origin.StartsWith("http://localhost:") ||
-       origin.StartsWith("https://localhost:") ||
-       origin.EndsWith(".vercel.app"))
-          .AllowAnyMethod()
-          .AllowAnyHeader()
-          .AllowCredentials();
-});
+app.UseCors("MyDefaultPolicy");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
