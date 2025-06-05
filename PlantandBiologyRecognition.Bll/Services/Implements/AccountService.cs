@@ -31,7 +31,7 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
             var newAccount = _mapper.Map<Account>(createAccountRequest);
             newAccount.Accountid = Guid.NewGuid();
-            newAccount.Password = createAccountRequest.Password;
+            newAccount.Password = BCrypt.Net.BCrypt.HashPassword(createAccountRequest.Password);
             newAccount.Isactive = true;
             newAccount.Phone = null;
             await _unitOfWork.GetRepository<Account>()
