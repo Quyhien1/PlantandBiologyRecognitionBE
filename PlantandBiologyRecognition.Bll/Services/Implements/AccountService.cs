@@ -1,17 +1,18 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using PlantandBiologyRecognition.BLL.Services.Interfaces;
+using PlantandBiologyRecognition.BLL.Utils;
+using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Payload.Request.Account;
+using PlantandBiologyRecognition.DAL.Payload.Respond.Account;
+using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using PlantandBiologyRecognition.BLL.Services.Interfaces;
-using PlantandBiologyRecognition.DAL.Models;
-using PlantandBiologyRecognition.DAL.Payload.Request.Account;
-using PlantandBiologyRecognition.DAL.Payload.Respond.Account;
-using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 
 namespace PlantandBiologyRecognition.BLL.Services.Implements
 {
@@ -31,7 +32,7 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
             var newAccount = _mapper.Map<Account>(createAccountRequest);
             newAccount.Accountid = Guid.NewGuid();
-            newAccount.Password = createAccountRequest.Password;
+            newAccount.Password = PasswordUtil.HashPassword(createAccountRequest.Password);
             newAccount.Isactive = true;
             newAccount.Phone = null;
             await _unitOfWork.GetRepository<Account>()
