@@ -1,8 +1,7 @@
 using System.Text.Json.Serialization;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using PlantandBiologyRecognition.BLL.Services.Implements;
-using PlantandBiologyRecognition.BLL.Services.Interfaces;
+using PlantandBiologyRecognition.BLL.Services;
 using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Repositories.Implements;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
@@ -49,7 +48,7 @@ app.Run();
 void RegisterApplicationServices()
 {
     // Register your service so it can resolve dependencies
-    builder.Services.AddScoped<IAccountService, AccountService>();
+   
 }
 
 
