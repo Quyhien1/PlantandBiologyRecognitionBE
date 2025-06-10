@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
@@ -28,8 +29,6 @@
   <ItemGroup>
     <Folder Include="Mapper\" />
     <Folder Include="Models\" />
-    <Folder Include="Payload\Request\User\" />
-    <Folder Include="Payload\Respond\User\" />
   </ItemGroup>
 
 </Project>

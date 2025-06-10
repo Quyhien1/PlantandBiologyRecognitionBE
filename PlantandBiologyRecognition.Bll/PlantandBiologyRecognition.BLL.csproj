@@ -16,9 +16,4 @@
     <ProjectReference Include="..\PlantandBiologyRecognition.DLL\PlantandBiologyRecognition.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Implements\" />
-    <Folder Include="Services\Interfaces\" />
-  </ItemGroup>
-
 </Project>

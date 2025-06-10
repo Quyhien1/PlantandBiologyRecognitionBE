@@ -7,11 +7,11 @@ namespace PlantandBiologyRecognition.DAL.Models;
 
 public partial class Recognitionhistory
 {
-    public int HistoryId { get; set; }
+    public Guid HistoryId { get; set; }
 
-    public int? UserId { get; set; }
+    public Guid? UserId { get; set; }
 
-    public int? SampleId { get; set; }
+    public Guid? SampleId { get; set; }
 
     public DateTime? UploadTime { get; set; }
 
