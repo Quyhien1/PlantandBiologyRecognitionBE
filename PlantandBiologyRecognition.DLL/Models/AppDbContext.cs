@@ -13,13 +13,29 @@ public partial class AppDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Account> Accounts { get; set; }
+    public virtual DbSet<Aitrainingjob> Aitrainingjobs { get; set; }
 
-    public virtual DbSet<Educationmaterial> Educationmaterials { get; set; }
+    public virtual DbSet<Category> Categories { get; set; }
 
-    public virtual DbSet<History> Histories { get; set; }
+    public virtual DbSet<Feedback> Feedbacks { get; set; }
 
-    public virtual DbSet<Speciman> Specimen { get; set; }
+    public virtual DbSet<Learningtip> Learningtips { get; set; }
+
+    public virtual DbSet<Recognitionhistory> Recognitionhistories { get; set; }
+
+    public virtual DbSet<Sample> Samples { get; set; }
+
+    public virtual DbSet<Sampledetail> Sampledetails { get; set; }
+
+    public virtual DbSet<Sampleimage> Sampleimages { get; set; }
+
+    public virtual DbSet<Savedsample> Savedsamples { get; set; }
+
+    public virtual DbSet<Textbooklink> Textbooklinks { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<Userrole> Userroles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,129 +53,262 @@ public partial class AppDbContext : DbContext
             .HasPostgresExtension("graphql", "pg_graphql")
             .HasPostgresExtension("vault", "supabase_vault");
 
-        modelBuilder.Entity<Account>(entity =>
+        modelBuilder.Entity<Aitrainingjob>(entity =>
         {
-            entity.HasKey(e => e.Accountid).HasName("account_pkey");
+            entity.HasKey(e => e.JobId).HasName("aitrainingjobs_pkey");
 
-            entity.ToTable("account", "plantandbiologyrecognition");
+            entity.ToTable("aitrainingjobs", "plantandbiologyrecognition");
 
-            entity.Property(e => e.Accountid)
-                .ValueGeneratedNever()
-                .HasColumnName("accountid");
-            entity.Property(e => e.Email)
-                .HasMaxLength(255)
-                .HasColumnName("email");
-            entity.Property(e => e.Isactive)
-                .HasDefaultValue(true)
-                .HasColumnName("isactive");
-            entity.Property(e => e.Password)
+            entity.Property(e => e.JobId).HasColumnName("job_id");
+            entity.Property(e => e.FinishedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("finished_at");
+            entity.Property(e => e.ModelVersion)
+                .HasMaxLength(50)
+                .HasColumnName("model_version");
+            entity.Property(e => e.StartedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("started_at");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasColumnName("status");
+        });
+
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.CategoryId).HasName("categories_pkey");
+
+            entity.ToTable("categories", "plantandbiologyrecognition");
+
+            entity.HasIndex(e => e.Name, "categories_name_key").IsUnique();
+
+            entity.Property(e => e.CategoryId).HasColumnName("category_id");
+            entity.Property(e => e.Name)
                 .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnName("password");
-            entity.Property(e => e.Phone)
-                .HasMaxLength(20)
-                .HasColumnName("phone");
-            entity.Property(e => e.Roleid)
                 .HasMaxLength(100)
-                .HasColumnName("roleid");
-            entity.Property(e => e.Username)
-                .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnName("username");
+                .HasColumnName("name");
         });
 
-        modelBuilder.Entity<Educationmaterial>(entity =>
+        modelBuilder.Entity<Feedback>(entity =>
         {
-            entity.HasKey(e => e.Materialid).HasName("educationmaterial_pkey");
+            entity.HasKey(e => e.FeedbackId).HasName("feedbacks_pkey");
 
-            entity.ToTable("educationmaterial", "plantandbiologyrecognition");
+            entity.ToTable("feedbacks", "plantandbiologyrecognition");
 
-            entity.Property(e => e.Materialid)
-                .ValueGeneratedNever()
-                .HasColumnName("materialid");
-            entity.Property(e => e.Createby).HasColumnName("createby");
-            entity.Property(e => e.Createdat)
+            entity.Property(e => e.FeedbackId).HasColumnName("feedback_id");
+            entity.Property(e => e.Message)
+                .IsRequired()
+                .HasColumnName("message");
+            entity.Property(e => e.SubmittedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdat");
-            entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Filepath)
-                .HasMaxLength(500)
-                .HasColumnName("filepath");
-            entity.Property(e => e.Title)
-                .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnName("title");
-            entity.Property(e => e.Updateat)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updateat");
+                .HasColumnName("submitted_at");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            entity.HasOne(d => d.CreatebyNavigation).WithMany(p => p.Educationmaterials)
-                .HasForeignKey(d => d.Createby)
-                .HasConstraintName("educationmaterial_createby_fkey");
+            entity.HasOne(d => d.User).WithMany(p => p.Feedbacks)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("feedbacks_user_id_fkey");
         });
 
-        modelBuilder.Entity<History>(entity =>
+        modelBuilder.Entity<Learningtip>(entity =>
         {
-            entity.HasKey(e => e.Sessionid).HasName("history_pkey");
+            entity.HasKey(e => e.TipId).HasName("learningtips_pkey");
 
-            entity.ToTable("history", "plantandbiologyrecognition");
+            entity.ToTable("learningtips", "plantandbiologyrecognition");
 
-            entity.Property(e => e.Sessionid)
-                .ValueGeneratedNever()
-                .HasColumnName("sessionid");
-            entity.Property(e => e.Aimodel)
-                .HasMaxLength(255)
-                .HasColumnName("aimodel");
-            entity.Property(e => e.Answer).HasColumnName("answer");
-            entity.Property(e => e.Createdat)
+            entity.Property(e => e.TipId).HasColumnName("tip_id");
+            entity.Property(e => e.SampleId).HasColumnName("sample_id");
+            entity.Property(e => e.TipText)
+                .IsRequired()
+                .HasColumnName("tip_text");
+
+            entity.HasOne(d => d.Sample).WithMany(p => p.Learningtips)
+                .HasForeignKey(d => d.SampleId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("learningtips_sample_id_fkey");
+        });
+
+        modelBuilder.Entity<Recognitionhistory>(entity =>
+        {
+            entity.HasKey(e => e.HistoryId).HasName("recognitionhistory_pkey");
+
+            entity.ToTable("recognitionhistory", "plantandbiologyrecognition");
+
+            entity.Property(e => e.HistoryId).HasColumnName("history_id");
+            entity.Property(e => e.ResultConfidence).HasColumnName("result_confidence");
+            entity.Property(e => e.SampleId).HasColumnName("sample_id");
+            entity.Property(e => e.UploadTime)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdat");
-            entity.Property(e => e.Imageuri)
-                .HasMaxLength(500)
-                .HasColumnName("imageuri");
-            entity.Property(e => e.Specimen).HasColumnName("specimen");
-            entity.Property(e => e.Userid).HasColumnName("userid");
+                .HasColumnName("upload_time");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            entity.HasOne(d => d.SpecimenNavigation).WithMany(p => p.Histories)
-                .HasForeignKey(d => d.Specimen)
-                .HasConstraintName("history_specimen_fkey");
+            entity.HasOne(d => d.Sample).WithMany(p => p.Recognitionhistories)
+                .HasForeignKey(d => d.SampleId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("recognitionhistory_sample_id_fkey");
 
-            entity.HasOne(d => d.User).WithMany(p => p.Histories)
-                .HasForeignKey(d => d.Userid)
-                .HasConstraintName("history_userid_fkey");
+            entity.HasOne(d => d.User).WithMany(p => p.Recognitionhistories)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("recognitionhistory_user_id_fkey");
         });
 
-        modelBuilder.Entity<Speciman>(entity =>
+        modelBuilder.Entity<Sample>(entity =>
         {
-            entity.HasKey(e => e.Specimenid).HasName("specimen_pkey");
+            entity.HasKey(e => e.SampleId).HasName("samples_pkey");
 
-            entity.ToTable("specimen", "plantandbiologyrecognition");
+            entity.ToTable("samples", "plantandbiologyrecognition");
 
-            entity.Property(e => e.Specimenid)
-                .ValueGeneratedNever()
-                .HasColumnName("specimenid");
-            entity.Property(e => e.Commonname)
-                .HasMaxLength(255)
-                .HasColumnName("commonname");
-            entity.Property(e => e.Createby).HasColumnName("createby");
+            entity.Property(e => e.SampleId).HasColumnName("sample_id");
+            entity.Property(e => e.CategoryId).HasColumnName("category_id");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("name");
+            entity.Property(e => e.ScientificName)
+                .HasMaxLength(150)
+                .HasColumnName("scientific_name");
+
+            entity.HasOne(d => d.Category).WithMany(p => p.Samples)
+                .HasForeignKey(d => d.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("samples_category_id_fkey");
+        });
+
+        modelBuilder.Entity<Sampledetail>(entity =>
+        {
+            entity.HasKey(e => e.DetailId).HasName("sampledetails_pkey");
+
+            entity.ToTable("sampledetails", "plantandbiologyrecognition");
+
+            entity.Property(e => e.DetailId).HasColumnName("detail_id");
+            entity.Property(e => e.Behavior).HasColumnName("behavior");
             entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Imageuri)
-                .HasMaxLength(500)
-                .HasColumnName("imageuri");
-            entity.Property(e => e.Inmaterial).HasColumnName("inmaterial");
-            entity.Property(e => e.Scientificname)
-                .HasMaxLength(255)
-                .HasColumnName("scientificname");
+            entity.Property(e => e.Habitat).HasColumnName("habitat");
+            entity.Property(e => e.OtherInfo).HasColumnName("other_info");
+            entity.Property(e => e.SampleId).HasColumnName("sample_id");
 
-            entity.HasOne(d => d.CreatebyNavigation).WithMany(p => p.Specimen)
-                .HasForeignKey(d => d.Createby)
-                .HasConstraintName("specimen_createby_fkey");
+            entity.HasOne(d => d.Sample).WithMany(p => p.Sampledetails)
+                .HasForeignKey(d => d.SampleId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("sampledetails_sample_id_fkey");
+        });
 
-            entity.HasOne(d => d.InmaterialNavigation).WithMany(p => p.Specimen)
-                .HasForeignKey(d => d.Inmaterial)
-                .HasConstraintName("specimen_inmaterial_fkey");
+        modelBuilder.Entity<Sampleimage>(entity =>
+        {
+            entity.HasKey(e => e.ImageId).HasName("sampleimages_pkey");
+
+            entity.ToTable("sampleimages", "plantandbiologyrecognition");
+
+            entity.Property(e => e.ImageId).HasColumnName("image_id");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.ImageUrl)
+                .IsRequired()
+                .HasColumnName("image_url");
+            entity.Property(e => e.SampleId).HasColumnName("sample_id");
+
+            entity.HasOne(d => d.Sample).WithMany(p => p.Sampleimages)
+                .HasForeignKey(d => d.SampleId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("sampleimages_sample_id_fkey");
+        });
+
+        modelBuilder.Entity<Savedsample>(entity =>
+        {
+            entity.HasKey(e => e.SavedId).HasName("savedsamples_pkey");
+
+            entity.ToTable("savedsamples", "plantandbiologyrecognition");
+
+            entity.Property(e => e.SavedId).HasColumnName("saved_id");
+            entity.Property(e => e.SampleId).HasColumnName("sample_id");
+            entity.Property(e => e.SavedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("saved_at");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.Sample).WithMany(p => p.Savedsamples)
+                .HasForeignKey(d => d.SampleId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("savedsamples_sample_id_fkey");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Savedsamples)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("savedsamples_user_id_fkey");
+        });
+
+        modelBuilder.Entity<Textbooklink>(entity =>
+        {
+            entity.HasKey(e => e.LinkId).HasName("textbooklinks_pkey");
+
+            entity.ToTable("textbooklinks", "plantandbiologyrecognition");
+
+            entity.Property(e => e.LinkId).HasColumnName("link_id");
+            entity.Property(e => e.ContentSummary).HasColumnName("content_summary");
+            entity.Property(e => e.PageNumber).HasColumnName("page_number");
+            entity.Property(e => e.SampleId).HasColumnName("sample_id");
+            entity.Property(e => e.TextbookName)
+                .HasMaxLength(150)
+                .HasColumnName("textbook_name");
+
+            entity.HasOne(d => d.Sample).WithMany(p => p.Textbooklinks)
+                .HasForeignKey(d => d.SampleId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("textbooklinks_sample_id_fkey");
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.UserId).HasName("users_pkey");
+
+            entity.ToTable("users", "plantandbiologyrecognition");
+
+            entity.HasIndex(e => e.Email, "users_email_key").IsUnique();
+
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Avatar)
+                .HasColumnType("character varying")
+                .HasColumnName("avatar");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("email");
+            entity.Property(e => e.IsActive).HasColumnName("Is_Active");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("name");
+            entity.Property(e => e.PasswordHash)
+                .IsRequired()
+                .HasColumnName("password_hash");
+        });
+
+        modelBuilder.Entity<Userrole>(entity =>
+        {
+            entity.HasKey(e => e.RoleId).HasName("userroles_pkey");
+
+            entity.ToTable("userroles", "plantandbiologyrecognition");
+
+            entity.HasIndex(e => e.RoleName, "userroles_role_name_key").IsUnique();
+
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+            entity.Property(e => e.RoleName)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasColumnName("role_name");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Userroles)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("userroles_user_id_fkey");
         });
         modelBuilder.HasSequence<int>("seq_schema_version", "graphql").IsCyclic();
 

@@ -15,19 +15,51 @@
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "plantandbiologyrecognition.account",
+         "Name": "plantandbiologyrecognition.aitrainingjobs",
          "ObjectType": 0
       },
       {
-         "Name": "plantandbiologyrecognition.educationmaterial",
+         "Name": "plantandbiologyrecognition.categories",
          "ObjectType": 0
       },
       {
-         "Name": "plantandbiologyrecognition.history",
+         "Name": "plantandbiologyrecognition.feedbacks",
          "ObjectType": 0
       },
       {
-         "Name": "plantandbiologyrecognition.specimen",
+         "Name": "plantandbiologyrecognition.learningtips",
+         "ObjectType": 0
+      },
+      {
+         "Name": "plantandbiologyrecognition.recognitionhistory",
+         "ObjectType": 0
+      },
+      {
+         "Name": "plantandbiologyrecognition.sampledetails",
+         "ObjectType": 0
+      },
+      {
+         "Name": "plantandbiologyrecognition.sampleimages",
+         "ObjectType": 0
+      },
+      {
+         "Name": "plantandbiologyrecognition.samples",
+         "ObjectType": 0
+      },
+      {
+         "Name": "plantandbiologyrecognition.savedsamples",
+         "ObjectType": 0
+      },
+      {
+         "Name": "plantandbiologyrecognition.textbooklinks",
+         "ObjectType": 0
+      },
+      {
+         "Name": "plantandbiologyrecognition.userroles",
+         "ObjectType": 0
+      },
+      {
+         "Name": "plantandbiologyrecognition.users",
          "ObjectType": 0
       }
    ],
