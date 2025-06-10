@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PlantandBiologyRecognition.BLL.Services;
+using Microsoft.OpenApi.Models;
 using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Repositories.Implements;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
@@ -9,37 +10,31 @@ using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Ensure services are registered before building the host
-RegisterApplicationServices();
+ConfigureServices();
 ConfigureDatabase();
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
-builder.Services.AddControllers()
+ConfigureSwagger();
+var app = builder.Build();
+void ConfigureServices()
+{
+    builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
+    RegisterApplicationServices();
+}
 
-var app = builder.Build();
 
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 //}
-app.UseCors(options =>
-{
-    options.SetIsOriginAllowed(origin =>
-       origin.StartsWith("http://localhost:") ||
-       origin.StartsWith("https://localhost:") ||
-       origin.EndsWith(".vercel.app"))
-          .AllowAnyMethod()
-          .AllowAnyHeader()
-          .AllowCredentials();
-});
+app.UseCors("MyDefaultPolicy");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
@@ -51,8 +46,19 @@ void RegisterApplicationServices()
    
 }
 
-
-void ConfigureDatabase()
+void ConfigureSwagger()
+{
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "PlantandBiologyRecognition.API",
+            Version = "v1",
+            Description = "A PlantandBiologyRecognition System Project"
+        });
+    });
+}
+    void ConfigureDatabase()
 {
     builder.Services.AddDbContext<AppDbContext>(options =>
     {
