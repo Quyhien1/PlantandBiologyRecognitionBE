@@ -7,9 +7,9 @@ namespace PlantandBiologyRecognition.DAL.Models;
 
 public partial class Sampleimage
 {
-    public int ImageId { get; set; }
+    public Guid ImageId { get; set; }
 
-    public int? SampleId { get; set; }
+    public Guid? SampleId { get; set; }
 
     public string ImageUrl { get; set; }
 

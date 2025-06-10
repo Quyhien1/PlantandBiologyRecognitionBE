@@ -7,9 +7,9 @@ namespace PlantandBiologyRecognition.DAL.Models;
 
 public partial class Textbooklink
 {
-    public int LinkId { get; set; }
+    public Guid LinkId { get; set; }
 
-    public int? SampleId { get; set; }
+    public Guid? SampleId { get; set; }
 
     public string TextbookName { get; set; }
 

@@ -7,9 +7,9 @@ namespace PlantandBiologyRecognition.DAL.Models;
 
 public partial class Sampledetail
 {
-    public int DetailId { get; set; }
+    public Guid DetailId { get; set; }
 
-    public int? SampleId { get; set; }
+    public Guid? SampleId { get; set; }
 
     public string Description { get; set; }
 

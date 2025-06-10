@@ -7,9 +7,9 @@ namespace PlantandBiologyRecognition.DAL.Models;
 
 public partial class Learningtip
 {
-    public int TipId { get; set; }
+    public Guid TipId { get; set; }
 
-    public int? SampleId { get; set; }
+    public Guid? SampleId { get; set; }
 
     public string TipText { get; set; }
 

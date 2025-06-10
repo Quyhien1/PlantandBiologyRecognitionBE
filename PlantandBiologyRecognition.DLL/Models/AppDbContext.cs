@@ -59,18 +59,20 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("aitrainingjobs", "plantandbiologyrecognition");
 
-            entity.Property(e => e.JobId).HasColumnName("job_id");
+            entity.Property(e => e.JobId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("job_id");
             entity.Property(e => e.FinishedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("finished_at");
             entity.Property(e => e.ModelVersion)
-                .HasMaxLength(50)
+                .HasColumnType("character varying")
                 .HasColumnName("model_version");
             entity.Property(e => e.StartedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("started_at");
             entity.Property(e => e.Status)
-                .HasMaxLength(50)
+                .HasColumnType("character varying")
                 .HasColumnName("status");
         });
 
@@ -82,10 +84,12 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.Name, "categories_name_key").IsUnique();
 
-            entity.Property(e => e.CategoryId).HasColumnName("category_id");
+            entity.Property(e => e.CategoryId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("category_id");
             entity.Property(e => e.Name)
                 .IsRequired()
-                .HasMaxLength(100)
+                .HasColumnType("character varying")
                 .HasColumnName("name");
         });
 
@@ -95,7 +99,9 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("feedbacks", "plantandbiologyrecognition");
 
-            entity.Property(e => e.FeedbackId).HasColumnName("feedback_id");
+            entity.Property(e => e.FeedbackId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("feedback_id");
             entity.Property(e => e.Message)
                 .IsRequired()
                 .HasColumnName("message");
@@ -107,7 +113,6 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("feedbacks_user_id_fkey");
         });
 
@@ -117,7 +122,9 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("learningtips", "plantandbiologyrecognition");
 
-            entity.Property(e => e.TipId).HasColumnName("tip_id");
+            entity.Property(e => e.TipId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("tip_id");
             entity.Property(e => e.SampleId).HasColumnName("sample_id");
             entity.Property(e => e.TipText)
                 .IsRequired()
@@ -125,7 +132,6 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.Sample).WithMany(p => p.Learningtips)
                 .HasForeignKey(d => d.SampleId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("learningtips_sample_id_fkey");
         });
 
@@ -135,7 +141,9 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("recognitionhistory", "plantandbiologyrecognition");
 
-            entity.Property(e => e.HistoryId).HasColumnName("history_id");
+            entity.Property(e => e.HistoryId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("history_id");
             entity.Property(e => e.ResultConfidence).HasColumnName("result_confidence");
             entity.Property(e => e.SampleId).HasColumnName("sample_id");
             entity.Property(e => e.UploadTime)
@@ -146,12 +154,10 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.Sample).WithMany(p => p.Recognitionhistories)
                 .HasForeignKey(d => d.SampleId)
-                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("recognitionhistory_sample_id_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.Recognitionhistories)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("recognitionhistory_user_id_fkey");
         });
 
@@ -161,19 +167,20 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("samples", "plantandbiologyrecognition");
 
-            entity.Property(e => e.SampleId).HasColumnName("sample_id");
+            entity.Property(e => e.SampleId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("sample_id");
             entity.Property(e => e.CategoryId).HasColumnName("category_id");
             entity.Property(e => e.Name)
                 .IsRequired()
-                .HasMaxLength(100)
+                .HasColumnType("character varying")
                 .HasColumnName("name");
             entity.Property(e => e.ScientificName)
-                .HasMaxLength(150)
+                .HasColumnType("character varying")
                 .HasColumnName("scientific_name");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Samples)
                 .HasForeignKey(d => d.CategoryId)
-                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("samples_category_id_fkey");
         });
 
@@ -183,7 +190,9 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("sampledetails", "plantandbiologyrecognition");
 
-            entity.Property(e => e.DetailId).HasColumnName("detail_id");
+            entity.Property(e => e.DetailId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("detail_id");
             entity.Property(e => e.Behavior).HasColumnName("behavior");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.Habitat).HasColumnName("habitat");
@@ -192,7 +201,6 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.Sample).WithMany(p => p.Sampledetails)
                 .HasForeignKey(d => d.SampleId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("sampledetails_sample_id_fkey");
         });
 
@@ -202,7 +210,9 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("sampleimages", "plantandbiologyrecognition");
 
-            entity.Property(e => e.ImageId).HasColumnName("image_id");
+            entity.Property(e => e.ImageId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("image_id");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.ImageUrl)
                 .IsRequired()
@@ -211,7 +221,6 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.Sample).WithMany(p => p.Sampleimages)
                 .HasForeignKey(d => d.SampleId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("sampleimages_sample_id_fkey");
         });
 
@@ -221,7 +230,9 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("savedsamples", "plantandbiologyrecognition");
 
-            entity.Property(e => e.SavedId).HasColumnName("saved_id");
+            entity.Property(e => e.SavedId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("saved_id");
             entity.Property(e => e.SampleId).HasColumnName("sample_id");
             entity.Property(e => e.SavedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -231,12 +242,10 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.Sample).WithMany(p => p.Savedsamples)
                 .HasForeignKey(d => d.SampleId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("savedsamples_sample_id_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.Savedsamples)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("savedsamples_user_id_fkey");
         });
 
@@ -246,17 +255,18 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("textbooklinks", "plantandbiologyrecognition");
 
-            entity.Property(e => e.LinkId).HasColumnName("link_id");
+            entity.Property(e => e.LinkId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("link_id");
             entity.Property(e => e.ContentSummary).HasColumnName("content_summary");
             entity.Property(e => e.PageNumber).HasColumnName("page_number");
             entity.Property(e => e.SampleId).HasColumnName("sample_id");
             entity.Property(e => e.TextbookName)
-                .HasMaxLength(150)
+                .HasColumnType("character varying")
                 .HasColumnName("textbook_name");
 
             entity.HasOne(d => d.Sample).WithMany(p => p.Textbooklinks)
                 .HasForeignKey(d => d.SampleId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("textbooklinks_sample_id_fkey");
         });
 
@@ -268,7 +278,9 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.Email, "users_email_key").IsUnique();
 
-            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.UserId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("user_id");
             entity.Property(e => e.Avatar)
                 .HasColumnType("character varying")
                 .HasColumnName("avatar");
@@ -278,12 +290,12 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.Email)
                 .IsRequired()
-                .HasMaxLength(100)
+                .HasColumnType("character varying")
                 .HasColumnName("email");
-            entity.Property(e => e.IsActive).HasColumnName("Is_Active");
+            entity.Property(e => e.IsActive).HasColumnName("is_active");
             entity.Property(e => e.Name)
                 .IsRequired()
-                .HasMaxLength(100)
+                .HasColumnType("character varying")
                 .HasColumnName("name");
             entity.Property(e => e.PasswordHash)
                 .IsRequired()
@@ -298,10 +310,12 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.RoleName, "userroles_role_name_key").IsUnique();
 
-            entity.Property(e => e.RoleId).HasColumnName("role_id");
+            entity.Property(e => e.RoleId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("role_id");
             entity.Property(e => e.RoleName)
                 .IsRequired()
-                .HasMaxLength(50)
+                .HasColumnType("character varying")
                 .HasColumnName("role_name");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 

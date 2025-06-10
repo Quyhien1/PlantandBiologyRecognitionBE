@@ -7,7 +7,7 @@ namespace PlantandBiologyRecognition.DAL.Models;
 
 public partial class Aitrainingjob
 {
-    public int JobId { get; set; }
+    public Guid JobId { get; set; }
 
     public DateTime? StartedAt { get; set; }
 

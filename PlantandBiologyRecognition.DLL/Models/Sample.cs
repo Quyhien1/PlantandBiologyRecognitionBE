@@ -7,13 +7,13 @@ namespace PlantandBiologyRecognition.DAL.Models;
 
 public partial class Sample
 {
-    public int SampleId { get; set; }
+    public Guid SampleId { get; set; }
 
     public string Name { get; set; }
 
     public string ScientificName { get; set; }
 
-    public int? CategoryId { get; set; }
+    public Guid? CategoryId { get; set; }
 
     public virtual Category Category { get; set; }
 
