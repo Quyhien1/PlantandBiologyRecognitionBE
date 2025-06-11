@@ -36,7 +36,7 @@ void ConfigureServices()
 app.UseSwagger();
 app.UseSwaggerUI();
 //}
-//app.UseCors("MyDefaultPolicy");
+app.UseCors("MyDefaultPolicy");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
