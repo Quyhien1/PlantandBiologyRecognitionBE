@@ -6,6 +6,8 @@ using Microsoft.OpenApi.Models;
 using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Repositories.Implements;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
+using PlantandBiologyRecognition.BLL.Services.Interfaces;
+using PlantandBiologyRecognition.BLL.Services.Implements;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +45,9 @@ app.Run();
 void RegisterApplicationServices()
 {
     // Register your service so it can resolve dependencies
-   
+   builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+
 }
 
 void ConfigureSwagger()

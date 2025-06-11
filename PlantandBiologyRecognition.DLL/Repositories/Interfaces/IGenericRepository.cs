@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Paginate;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Query;
-using PlantandBiologyRecognition.DAL.Paginate;
 
 namespace PlantandBiologyRecognition.DAL.Repositories.Interfaces
 {
@@ -35,24 +36,29 @@ namespace PlantandBiologyRecognition.DAL.Repositories.Interfaces
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
 
-        Task<IPaginate<T>> GetPagingListAsync(
+        Task<int> CountAsync(Expression<Func<T, bool>> predicate = null);
+
+        #endregion
+        Task<T> GetByIdAsync(Guid id);
+
+        IQueryable<T> GetQueryable(
+            Expression<Func<T, bool>> predicate = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
+
+        Task<PagingResponse<T>> GetPagingListAsync(
             Expression<Func<T, bool>> predicate = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
             int page = 1,
             int size = 10);
 
-        Task<IPaginate<TResult>> GetPagingListAsync<TResult>(
+        Task<PagingResponse<TResult>> GetPagingListAsync<TResult>(
             Expression<Func<T, TResult>> selector,
             Expression<Func<T, bool>> predicate = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
             int page = 1,
             int size = 10);
-
-        Task<int> CountAsync(Expression<Func<T, bool>> predicate = null);
-
-        #endregion
 
         #region Insert
 
