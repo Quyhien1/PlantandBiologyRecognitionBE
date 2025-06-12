@@ -27,6 +27,7 @@ void ConfigureServices()
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
+    builder.Services.AddScoped<IFeedbackService, FeedbackService>();
     RegisterApplicationServices();
 }
 
