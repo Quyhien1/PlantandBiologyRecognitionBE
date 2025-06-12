@@ -10,6 +10,11 @@
             public const string UserEndPoint = ApiEndPoint + "/user";
             public const string CreateUser = UserEndPoint + "/create-user";
         }
+        public static class Feedbacks
+        {
+            public const string FeedbackEndpoint = ApiEndPoint + "/feedback";
+            public const string CreateFeedback = FeedbackEndpoint + "/create-feedback";
+        }
     }
 
 }
