@@ -21,7 +21,7 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
 {
     public class FeedbackService : BaseService<FeedbackService>, IFeedbackService
     {
-        public FeedbackService(IUnitOfWork<AppDbContext> unitOfWork, ILogger<UserService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public FeedbackService(IUnitOfWork<AppDbContext> unitOfWork, ILogger<FeedbackService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
