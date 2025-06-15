@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlantandBiologyRecognition.DAL.Payload.Request
+namespace PlantandBiologyRecognition.DAL.Payload.Respond.Feedback
 {
-    public class CreateFeedbackRequest
+    public class GetFeedbackRespond
     {
-        [Required]
+        public Guid FeedbackId { get; set; }
         public Guid UserId { get; set; }
-        [Required]
-        [MaxLength(1_000)]
         public string Message { get; set; }
+        public DateOnly SubmittedAt { get; set; }
     }
 }

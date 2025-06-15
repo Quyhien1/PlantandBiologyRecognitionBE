@@ -28,6 +28,8 @@ void ConfigureServices()
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
     builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+    builder.Services.AddScoped<ICategoryService, CategoryService>();
+    builder.Services.AddScoped<ILearningTipService, LearningTipService>();
     RegisterApplicationServices();
 }
 
