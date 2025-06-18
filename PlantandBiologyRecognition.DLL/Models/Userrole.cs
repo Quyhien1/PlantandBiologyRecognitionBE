@@ -5,6 +5,11 @@ using System.Collections.Generic;
 
 namespace PlantandBiologyRecognition.DAL.Models;
 
+public enum RoleName
+{     Admin,
+    Student,
+    Teacher
+}
 public partial class Userrole
 {
     public Guid RoleId { get; set; }
