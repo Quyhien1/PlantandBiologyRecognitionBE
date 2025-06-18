@@ -64,5 +64,107 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                 throw;
             }
         }
+        public async Task<CreateUserRespond> GetUserById(Guid userId)
+        {
+            try
+            {
+                if (userId == Guid.Empty)
+                {
+                    throw new ArgumentException("User ID cannot be empty.", nameof(userId));
+                }
+                var user = await _unitOfWork.GetRepository<User>().SingleOrDefaultAsync(predicate: s => s.UserId == userId);
+                if (user == null)
+                {
+                    throw new NotFoundException($"User with ID {userId} not found.");
+                }
+                return _mapper.Map<CreateUserRespond>(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving user by ID: {Message}", ex.Message);
+                throw;
+            }
+        }
+        public async Task<IEnumerable<CreateUserRespond>> GetAllUsers()
+        {
+            try
+            {
+                var users = await _unitOfWork.GetRepository<User>()
+                    .GetListAsync(
+                    predicate: s => s.IsActive,
+                    orderBy: q => q.OrderByDescending(s => s.CreatedAt)
+                    );
+                return _mapper.Map<IEnumerable<CreateUserRespond>>(users);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all users: {Message}", ex.Message);
+                throw;
+            }
+        }
+        public async Task<bool> DeleteUser(Guid userId)
+        {
+            try
+            {
+                if (userId == Guid.Empty)
+                {
+                    throw new ArgumentException("User ID cannot be empty.", nameof(userId));
+                }
+                var user = await _unitOfWork.GetRepository<User>().SingleOrDefaultAsync(predicate: s => s.UserId == userId);
+                if (user == null)
+                {
+                    throw new NotFoundException($"User with ID {userId} not found.");
+                }
+                user.IsActive = false;
+                _unitOfWork.GetRepository<User>().UpdateAsync(user);
+                await _unitOfWork.CommitAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting user: {Message}", ex.Message);
+                throw;
+            }
+        }
+        public async Task<UpdateUserRespond> UpdateUser(Guid userId, UpdateUserRequest updateUserRequest)
+        {
+            try
+            {
+                if (userId == Guid.Empty)
+                {
+                    throw new ArgumentException("User ID cannot be empty.", nameof(userId));
+                }
+                if (updateUserRequest == null)
+                {
+                    throw new ArgumentNullException(nameof(updateUserRequest), "Update user request cannot be null.");
+                }
+                var user = await _unitOfWork.GetRepository<User>().SingleOrDefaultAsync(
+                    predicate: s => s.UserId == userId && s.IsActive,
+                    orderBy: q => q.OrderByDescending(s => s.Name)
+                    );
+                if (user == null)
+                {
+                    throw new NotFoundException($"User with ID {userId} not found.");
+                }
+                _mapper.Map(updateUserRequest, user);
+                string currentAvatar = user.Avatar;
+                if (updateUserRequest.Avatar != null)
+                {
+                    user.Avatar = await _cloudinaryService.UploadImageAsync(updateUserRequest.Avatar, _httpContextAccessor.HttpContext?.User);
+                }
+                else
+                {
+                    user.Avatar = currentAvatar;
+                }
+                _unitOfWork.GetRepository<User>().UpdateAsync(user);
+                await _unitOfWork.CommitAsync();
+                return _mapper.Map<UpdateUserRespond>(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating user: {Message}", ex.Message);
+                throw;
+            }
+        }
     }
 }
