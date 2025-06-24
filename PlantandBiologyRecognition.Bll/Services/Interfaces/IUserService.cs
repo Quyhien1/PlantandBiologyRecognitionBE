@@ -1,4 +1,5 @@
-﻿using PlantandBiologyRecognition.DAL.Payload.Request.User;
+﻿using PlantandBiologyRecognition.DAL.Paginate;
+using PlantandBiologyRecognition.DAL.Payload.Request.User;
 using PlantandBiologyRecognition.DAL.Payload.Respond.User;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace PlantandBiologyRecognition.BLL.Services.Interfaces
     {
         Task<CreateUserRespond> CreateUser(CreateUserRequest createUserRequest);
         Task<CreateUserRespond> GetUserById(Guid userId);
-        Task<IEnumerable<CreateUserRespond>> GetAllUsers();
+        Task<IPaginate<CreateUserRespond>> GetAllUsers(int page = 1, int size = 10, string searchTerm = null);
         Task<bool> DeleteUser(Guid userId);
         Task<UpdateUserRespond> UpdateUser(Guid userId, UpdateUserRequest updateUserRequest);
     }

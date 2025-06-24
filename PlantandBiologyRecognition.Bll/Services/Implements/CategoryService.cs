@@ -8,9 +8,12 @@ using Microsoft.Extensions.Logging;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.Category;
 using PlantandBiologyRecognition.DAL.Payload.Respond.Category;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace PlantandBiologyRecognition.BLL.Services.Implements
 {
@@ -58,10 +61,26 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             });
         }
 
-        public async Task<List<GetCategoryRespond>> GetAllCategories()
+        public async Task<IPaginate<GetCategoryRespond>> GetAllCategories(int page = 1, int size = 10, string searchTerm = null)
         {
-            var categories = await _unitOfWork.GetRepository<Category>().GetListAsync();
-            return categories.Select(c => _mapper.Map<GetCategoryRespond>(c)).ToList();
+            try
+            {
+                string searchTermLower = searchTerm?.ToLower();
+                
+                return await _unitOfWork.GetRepository<Category>().GetPagingListAsync(
+                    selector: x => _mapper.Map<GetCategoryRespond>(x),
+                    predicate: x => string.IsNullOrWhiteSpace(searchTerm) || 
+                                   x.Name.ToLower().Contains(searchTermLower),
+                    orderBy: q => q.OrderByDescending(x => x.Name),
+                    page: page,
+                    size: size
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving categories: {Message}", ex.Message);
+                throw;
+            }
         }
 
         public async Task<GetCategoryRespond> GetCategoryById(Guid categoryId)

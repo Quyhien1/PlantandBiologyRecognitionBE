@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using LinqKit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.TextbookLink;
 using PlantandBiologyRecognition.DAL.Payload.Respond.TextbookLink;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
@@ -83,10 +85,29 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             return _mapper.Map<GetTextbooklinkRespond>(entity);
         }
 
-        public async Task<List<GetTextbooklinkRespond>> GetAllTextbooklinks()
+
+
+        public async Task<IPaginate<GetTextbooklinkRespond>> GetAllTextbooklinks(int page = 1, int size = 10, string searchTerm = null)
         {
-            var entities = await _unitOfWork.GetRepository<Textbooklink>().GetListAsync();
-            return entities.Select(e => _mapper.Map<GetTextbooklinkRespond>(e)).ToList();
+            try
+            {
+                string searchTermLower = searchTerm?.ToLower();
+                
+                return await _unitOfWork.GetRepository<Textbooklink>().GetPagingListAsync(
+                    selector: x => _mapper.Map<GetTextbooklinkRespond>(x),
+                    predicate: x => string.IsNullOrWhiteSpace(searchTerm) || 
+                                   (x.TextbookName.ToLower().Contains(searchTermLower) || 
+                                    x.ContentSummary.ToLower().Contains(searchTermLower)),
+                    orderBy: q => q.OrderByDescending(x => x.LinkId), // Use LinkId since CreatedAt doesn't exist
+                    page: page,
+                    size: size
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all textbook links: {Message}", ex.Message);
+                throw;
+            }
         }
     }
 }

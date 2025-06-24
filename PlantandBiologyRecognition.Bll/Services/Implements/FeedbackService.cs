@@ -11,6 +11,7 @@ using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.BLL.Utils;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.Feedback;
 using PlantandBiologyRecognition.DAL.Payload.Request.User;
 using PlantandBiologyRecognition.DAL.Payload.Respond.Feedback;
@@ -62,11 +63,26 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             });
         }
 
-
-        public async Task<List<GetFeedbackRespond>> GetAllFeedbacks()
+        public async Task<IPaginate<GetFeedbackRespond>> GetAllFeedbacks(int page = 1, int size = 10, string searchTerm = null)
         {
-            var feedbacks = await _unitOfWork.GetRepository<Feedback>().GetListAsync();
-            return feedbacks.Select(fb => _mapper.Map<GetFeedbackRespond>(fb)).ToList();
+            try
+            {
+                string searchTermLower = searchTerm?.ToLower();
+                
+                return await _unitOfWork.GetRepository<Feedback>().GetPagingListAsync(
+                    selector: x => _mapper.Map<GetFeedbackRespond>(x),
+                    predicate: x => string.IsNullOrWhiteSpace(searchTerm) || 
+                                  x.Message.ToLower().Contains(searchTermLower),
+                    orderBy: q => q.OrderByDescending(x => x.SubmittedAt),
+                    page: page,
+                    size: size
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving paginated feedbacks: {Message}", ex.Message);
+                throw;
+            }
         }
 
         public async Task<GetFeedbackRespond> GetFeedbackById(Guid feedbackId)

@@ -25,6 +25,7 @@ namespace PlantandBiologyRecognition.DAL.Repositories.Implements
             _dbSet = context.Set<T>();
         }
 
+
         public void Dispose()
         {
             _dbContext?.Dispose();
@@ -83,49 +84,30 @@ namespace PlantandBiologyRecognition.DAL.Repositories.Implements
             return await query.Select(selector).ToListAsync();
         }
 
-        public virtual async Task<int> CountAsync(Expression<Func<T, bool>> predicate = null)
-        {
-            if (predicate != null) return await _dbSet.CountAsync(predicate);
-            return await _dbSet.CountAsync();
-        }
-
-        public Task<PagingResponse<T>> GetPagingListAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null, int page = 1,
+        public Task<IPaginate<T>> GetPagingListAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null, int page = 1,
             int size = 10)
         {
             IQueryable<T> query = _dbSet;
             if (include != null) query = include(query);
             if (predicate != null) query = query.Where(predicate);
-            if (orderBy != null) return orderBy(query).ToPagingResponse(page, size, 1);
-            return query.AsNoTracking().ToPagingResponse(page, size, 1);
+            if (orderBy != null) return orderBy(query).ToPaginateAsync(page, size, 1);
+            return query.AsNoTracking().ToPaginateAsync(page, size, 1);
         }
 
-        public Task<PagingResponse<TResult>> GetPagingListAsync<TResult>(Expression<Func<T, TResult>> selector, Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+        public Task<IPaginate<TResult>> GetPagingListAsync<TResult>(Expression<Func<T, TResult>> selector, Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null, int page = 1, int size = 10)
         {
             IQueryable<T> query = _dbSet;
             if (include != null) query = include(query);
             if (predicate != null) query = query.Where(predicate);
-            if (orderBy != null) return orderBy(query).Select(selector).ToPagingResponse(page, size, 1);
-            return query.AsNoTracking().Select(selector).ToPagingResponse(page, size, 1);
+            if (orderBy != null) return orderBy(query).Select(selector).ToPaginateAsync(page, size, 1);
+            return query.AsNoTracking().Select(selector).ToPaginateAsync(page, size, 1);
         }
 
-        public IQueryable<T> GetQueryable(
-        Expression<Func<T, bool>> predicate = null,
-        Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        public virtual async Task<int> CountAsync(Expression<Func<T, bool>> predicate = null)
         {
-            IQueryable<T> query = _dbSet.AsQueryable();
-
-            if (include != null)
-            {
-                query = include(query);
-            }
-
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return query;
+            if (predicate != null) return await _dbSet.CountAsync(predicate);
+            return await _dbSet.CountAsync();
         }
 
         #endregion
@@ -148,8 +130,7 @@ namespace PlantandBiologyRecognition.DAL.Repositories.Implements
         #region Update
         public void UpdateAsync(T entity)
         {
-            _dbSet.Attach(entity);
-            _dbContext.Entry(entity).State = EntityState.Modified;
+            _dbSet.Update(entity);
         }
 
         public void UpdateRange(IEnumerable<T> entities)
@@ -175,4 +156,3 @@ namespace PlantandBiologyRecognition.DAL.Repositories.Implements
         #endregion
     }
 }
-

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.Category;
 using PlantandBiologyRecognition.DAL.Payload.Respond.Category;
 
@@ -61,10 +62,10 @@ namespace PlantandBiologyRecognition.API.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Categories.GetAllCategories)]
-        [ProducesResponseType(typeof(ApiResponse<List<GetCategoryRespond>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllCategories()
+        [ProducesResponseType(typeof(ApiResponse<IPaginate<GetCategoryRespond>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllCategories([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
         {
-            var response = await _categoryService.GetAllCategories();
+            var response = await _categoryService.GetAllCategories(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(200, "All categories retrieved", response));
         }
 
