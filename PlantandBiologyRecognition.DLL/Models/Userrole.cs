@@ -6,7 +6,8 @@ using System.Collections.Generic;
 namespace PlantandBiologyRecognition.DAL.Models;
 
 public enum RoleName
-{     Admin,
+{
+    Admin,
     Student,
     Teacher
 }

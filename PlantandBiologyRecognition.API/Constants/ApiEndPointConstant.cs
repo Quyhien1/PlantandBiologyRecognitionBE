@@ -15,11 +15,11 @@
         }
         public static class UserRoles
         {
-            public const string UserRolesEndPoint = "api/user-roles";
-            public const string GetUserRoleByIdEndpoint = "api/user-roles/{roleId}";
-            public const string GetUserRolesByUserIdEndpoint = "api/user-roles/user/{userId}";
-            public const string DeleteUserRoleEndpoint = "api/user-roles/{roleId}";
-            public const string UpdateUserRoleEndpoint = "api/user-roles/{roleId}";
+            public const string UserRolesEndPoint = ApiEndPoint + "/user-roles";
+            public const string GetUserRoleByIdEndpoint = UserRolesEndPoint + "/{roleId}";
+            public const string GetUserRolesByUserIdEndpoint = UserRolesEndPoint + "/user/{userId}";
+            public const string DeleteUserRoleEndpoint = UserRolesEndPoint + "/{roleId}";
+            public const string UpdateUserRoleEndpoint = UserRolesEndPoint + "/{roleId}";
         }
         public static class Feedbacks
         {
