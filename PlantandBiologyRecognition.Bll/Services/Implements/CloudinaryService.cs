@@ -52,6 +52,8 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             if (file.Length > MaxImageSize)
                 throw new ArgumentException("File size exceeds the 5MB limit.");
 
+            // Comment out authorization code
+            /*
             var userIdClaim = user.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
                 throw new UnauthorizedAccessException("Invalid token or missing user ID.");
@@ -59,12 +61,15 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             var userEntity = await _unitOfWork.GetRepository<User>().GetByIdAsync(userId);
             if (userEntity == null)
                 throw new KeyNotFoundException("User not found.");
+            */
 
             try
             {
                 using var stream = file.OpenReadStream();
 
-                var sanitizedUserName = RemoveVietnameseAccent(userEntity.Name).ToLower().Replace(" ", "_");
+                // Replace user-based naming with generic naming
+                //var sanitizedUserName = RemoveVietnameseAccent(userEntity.Name).ToLower().Replace(" ", "_");
+                var sanitizedUserName = "user";
 
                 var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 var vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
@@ -100,6 +105,8 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             if (file.Length > MaxFileSize)
                 throw new ArgumentException("File size exceeds the 100MB limit.");
 
+            // Comment out authorization code
+            /*
             var userIdClaim = user.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
                 throw new UnauthorizedAccessException("Invalid token or missing user ID.");
@@ -107,12 +114,15 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             var userEntity = await _unitOfWork.GetRepository<User>().GetByIdAsync(userId);
             if (userEntity == null)
                 throw new KeyNotFoundException("User not found.");
+            */
 
             try
             {
                 using var stream = file.OpenReadStream();
 
-                var sanitizedUserName = RemoveVietnameseAccent(userEntity.Name).ToLower().Replace(" ", "_");
+                // Replace user-based naming with generic naming
+                //var sanitizedUserName = RemoveVietnameseAccent(userEntity.Name).ToLower().Replace(" ", "_");
+                var sanitizedUserName = "user";
 
                 var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 var vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);

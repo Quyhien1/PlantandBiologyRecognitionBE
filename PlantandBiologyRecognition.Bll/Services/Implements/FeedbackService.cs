@@ -11,9 +11,9 @@ using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.BLL.Utils;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
-using PlantandBiologyRecognition.DAL.Payload.Request;
+using PlantandBiologyRecognition.DAL.Payload.Request.Feedback;
 using PlantandBiologyRecognition.DAL.Payload.Request.User;
-using PlantandBiologyRecognition.DAL.Payload.Respond;
+using PlantandBiologyRecognition.DAL.Payload.Respond.Feedback;
 using PlantandBiologyRecognition.DAL.Payload.Respond.User;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 
@@ -42,5 +42,58 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                 throw;
             }
         }
+
+        public async Task<DeleteFeedbackRespond> DeleteFeedback(DeleteFeedbackRequest request)
+        {
+            return await _unitOfWork.ProcessInTransactionAsync(async () =>
+            {
+                var repo = _unitOfWork.GetRepository<Feedback>();
+                var feedback = await repo.GetByIdAsync(request.FeedbackId);
+                if (feedback == null)
+                    throw new NotFoundException("Feedback not found");
+
+                repo.DeleteAsync(feedback);
+
+                return new DeleteFeedbackRespond
+                {
+                    Success = true,
+                    Message = $"Feedback deleted successfully. Reason: {request.Reason}"
+                };
+            });
+        }
+
+
+        public async Task<List<GetFeedbackRespond>> GetAllFeedbacks()
+        {
+            var feedbacks = await _unitOfWork.GetRepository<Feedback>().GetListAsync();
+            return feedbacks.Select(fb => _mapper.Map<GetFeedbackRespond>(fb)).ToList();
+        }
+
+        public async Task<GetFeedbackRespond> GetFeedbackById(Guid feedbackId)
+        {
+            var feedback = await _unitOfWork.GetRepository<Feedback>().GetByIdAsync(feedbackId);
+            if (feedback == null)
+                throw new NotFoundException("Feedback not found");
+
+            return _mapper.Map<GetFeedbackRespond>(feedback);
+        }
+
+        public async Task<UpdateFeedbackRespond> UpdateFeedback(UpdateFeedbackRequest request)
+        {
+            return await _unitOfWork.ProcessInTransactionAsync(async () =>
+            {
+                var repo = _unitOfWork.GetRepository<Feedback>();
+                var feedback = await repo.GetByIdAsync(request.FeedbackId);
+                if (feedback == null)
+                    throw new NotFoundException("Feedback not found");
+
+                feedback.Message = request.Message;
+                feedback.SubmittedAt = DateTime.Now;
+
+                repo.UpdateAsync(feedback);
+                return _mapper.Map<UpdateFeedbackRespond>(feedback);
+            });
+        }
+
     }
 }

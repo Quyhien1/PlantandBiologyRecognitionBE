@@ -28,6 +28,11 @@ void ConfigureServices()
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
     builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+    builder.Services.AddScoped<ICategoryService, CategoryService>();
+    builder.Services.AddScoped<ILearningTipService, LearningTipService>();
+    builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<ITextbooklinkService, TextbooklinkService>();
     RegisterApplicationServices();
 }
 
@@ -46,9 +51,7 @@ app.Run();
 void RegisterApplicationServices()
 {
     // Register your service so it can resolve dependencies
-   builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
-
 }
 
 void ConfigureSwagger()
