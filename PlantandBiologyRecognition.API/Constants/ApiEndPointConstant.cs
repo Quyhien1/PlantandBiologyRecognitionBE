@@ -13,6 +13,14 @@
             public const string DeleteUserEndpoint = UsersEndPoint + "/delete-user/{userId}";
             public const string UpdateUserEndpoint = UsersEndPoint + "/update-user/{userId}";
         }
+        public static class UserRoles
+        {
+            public const string UserRolesEndPoint = ApiEndPoint + "/user-roles";
+            public const string GetUserRoleByIdEndpoint = UserRolesEndPoint + "/{roleId}";
+            public const string GetUserRolesByUserIdEndpoint = UserRolesEndPoint + "/user/{userId}";
+            public const string DeleteUserRoleEndpoint = UserRolesEndPoint + "/{roleId}";
+            public const string UpdateUserRoleEndpoint = UserRolesEndPoint + "/{roleId}";
+        }
         public static class Feedbacks
         {
             public const string FeedbackEndpoint = ApiEndPoint + "/feedback";
