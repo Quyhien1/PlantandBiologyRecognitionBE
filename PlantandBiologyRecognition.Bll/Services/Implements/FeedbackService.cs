@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -44,6 +44,12 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
         }
 
+        /// <summary>
+        /// Deletes a feedback entry identified by the provided request.
+        /// </summary>
+        /// <param name="request">The request containing the feedback ID and deletion reason.</param>
+        /// <returns>A response indicating successful deletion and the provided reason.</returns>
+        /// <exception cref="NotFoundException">Thrown if the specified feedback does not exist.</exception>
         public async Task<DeleteFeedbackRespond> DeleteFeedback(DeleteFeedbackRequest request)
         {
             return await _unitOfWork.ProcessInTransactionAsync(async () =>
@@ -63,6 +69,13 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             });
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of feedback entries, optionally filtered by a search term and ordered by submission date descending.
+        /// </summary>
+        /// <param name="page">The page number to retrieve (default is 1).</param>
+        /// <param name="size">The number of feedback entries per page (default is 10).</param>
+        /// <param name="searchTerm">An optional search term to filter feedback messages (case-insensitive).</param>
+        /// <returns>A paginated list of feedback response objects matching the specified criteria.</returns>
         public async Task<IPaginate<GetFeedbackRespond>> GetAllFeedbacks(int page = 1, int size = 10, string searchTerm = null)
         {
             try
@@ -85,6 +98,12 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
         }
 
+        /// <summary>
+        /// Retrieves a feedback entry by its unique identifier.
+        /// </summary>
+        /// <param name="feedbackId">The unique identifier of the feedback to retrieve.</param>
+        /// <returns>The feedback entry mapped to a response DTO.</returns>
+        /// <exception cref="NotFoundException">Thrown if the feedback with the specified ID does not exist.</exception>
         public async Task<GetFeedbackRespond> GetFeedbackById(Guid feedbackId)
         {
             var feedback = await _unitOfWork.GetRepository<Feedback>().GetByIdAsync(feedbackId);

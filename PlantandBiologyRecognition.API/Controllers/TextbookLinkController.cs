@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
@@ -13,17 +13,32 @@ namespace PlantandBiologyRecognition.API.Controllers
     {
         private readonly ITextbooklinkService _service;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextbooklinkController"/> class with the specified textbook link service.
+        /// </summary>
         public TextbooklinkController(ITextbooklinkService service)
         {
             _service = service;
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of textbook links, optionally filtered by a search term.
+        /// </summary>
+        /// <param name="page">The page number to retrieve. Defaults to 1.</param>
+        /// <param name="size">The number of items per page. Defaults to 10.</param>
+        /// <param name="searchTerm">An optional search term to filter textbook links.</param>
+        /// <returns>An HTTP 200 response containing the paginated and filtered list of textbook links.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
         {
             return Ok(await _service.GetAllTextbooklinks(page, size, searchTerm));
         }
 
+        /// <summary>
+        /// Retrieves a textbook link by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the textbook link.</param>
+        /// <returns>HTTP 200 with the textbook link if found; HTTP 404 if not found.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {

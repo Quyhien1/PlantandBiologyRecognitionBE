@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using LinqKit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -76,6 +76,12 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             });
         }
 
+        /// <summary>
+        /// Retrieves a textbook link by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the textbook link.</param>
+        /// <returns>The response object containing details of the textbook link.</returns>
+        /// <exception cref="NotFoundException">Thrown if the textbook link with the specified ID does not exist.</exception>
         public async Task<GetTextbooklinkRespond> GetTextbooklinkById(Guid id)
         {
             var entity = await _unitOfWork.GetRepository<Textbooklink>().GetByIdAsync(id);
@@ -87,6 +93,13 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
 
 
 
+        /// <summary>
+        /// Retrieves a paginated list of textbook links, optionally filtered by a search term.
+        /// </summary>
+        /// <param name="page">The page number to retrieve (default is 1).</param>
+        /// <param name="size">The number of items per page (default is 10).</param>
+        /// <param name="searchTerm">An optional search term to filter textbook links by name or content summary.</param>
+        /// <returns>A paginated list of textbook link response objects matching the search criteria.</returns>
         public async Task<IPaginate<GetTextbooklinkRespond>> GetAllTextbooklinks(int page = 1, int size = 10, string searchTerm = null)
         {
             try

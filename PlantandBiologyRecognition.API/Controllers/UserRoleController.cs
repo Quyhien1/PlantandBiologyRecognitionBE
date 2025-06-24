@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
@@ -48,6 +48,11 @@ namespace PlantandBiologyRecognition.API.Controllers
             );
         }
 
+        /// <summary>
+        /// Retrieves a user role by its unique identifier.
+        /// </summary>
+        /// <param name="roleId">The unique identifier of the user role to retrieve.</param>
+        /// <returns>An API response containing the user role data if found.</returns>
         [HttpGet(ApiEndPointConstant.UserRoles.GetUserRoleByIdEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<UserRoleRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -62,6 +67,13 @@ namespace PlantandBiologyRecognition.API.Controllers
             ));
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of user roles, optionally filtered by a search term.
+        /// </summary>
+        /// <param name="page">The page number to retrieve. Defaults to 1.</param>
+        /// <param name="size">The number of items per page. Defaults to 10.</param>
+        /// <param name="searchTerm">An optional search term to filter user roles.</param>
+        /// <returns>A standardized API response containing a paginated list of user roles.</returns>
         [HttpGet(ApiEndPointConstant.UserRoles.UserRolesEndPoint)]
         [ProducesResponseType(typeof(ApiResponse<IPaginate<UserRoleRespond>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]

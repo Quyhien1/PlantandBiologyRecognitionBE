@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
@@ -43,6 +43,13 @@ namespace PlantandBiologyRecognition.API.Controllers
             ));
         }
 
+        /// <summary>
+        /// Retrieves feedback details by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the feedback to retrieve.</param>
+        /// <returns>
+        /// Returns HTTP 200 with the feedback data if found; otherwise, returns HTTP 404 if the feedback does not exist.
+        /// </returns>
         [HttpGet(ApiEndPointConstant.Feedbacks.GetFeedbackById)]
         [ProducesResponseType(typeof(ApiResponse<GetFeedbackRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -61,6 +68,13 @@ namespace PlantandBiologyRecognition.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of feedback entries, optionally filtered by a search term.
+        /// </summary>
+        /// <param name="page">The page number to retrieve. Defaults to 1.</param>
+        /// <param name="size">The number of feedback entries per page. Defaults to 10.</param>
+        /// <param name="searchTerm">An optional term to filter feedback entries by content or related fields.</param>
+        /// <returns>A paginated response containing feedback data matching the specified criteria.</returns>
         [HttpGet(ApiEndPointConstant.Feedbacks.GetAllFeedbacks)]
         [ProducesResponseType(typeof(ApiResponse<IPaginate<GetFeedbackRespond>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllFeedbacks([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)

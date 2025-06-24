@@ -43,6 +43,13 @@ namespace PlantandBiologyRecognition.API.Controllers
             ));
         }
 
+        /// <summary>
+        /// Retrieves a category by its unique identifier.
+        /// </summary>
+        /// <param name="id">The GUID of the category to retrieve.</param>
+        /// <returns>
+        /// Returns HTTP 200 with the category data if found; otherwise, returns HTTP 404 if the category does not exist.
+        /// </returns>
         [HttpGet(ApiEndPointConstant.Categories.GetCategoryById)]
         [ProducesResponseType(typeof(ApiResponse<GetCategoryRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -61,6 +68,13 @@ namespace PlantandBiologyRecognition.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of categories, optionally filtered by a search term.
+        /// </summary>
+        /// <param name="page">The page number to retrieve. Defaults to 1.</param>
+        /// <param name="size">The number of categories per page. Defaults to 10.</param>
+        /// <param name="searchTerm">An optional term to filter categories by name or description.</param>
+        /// <returns>An HTTP 200 response containing a paginated list of category data.</returns>
         [HttpGet(ApiEndPointConstant.Categories.GetAllCategories)]
         [ProducesResponseType(typeof(ApiResponse<IPaginate<GetCategoryRespond>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCategories([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)

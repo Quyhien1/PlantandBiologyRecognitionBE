@@ -42,6 +42,12 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
         }
 
+        /// <summary>
+        /// Deletes a category by its ID and returns a response indicating the result.
+        /// </summary>
+        /// <param name="request">The request containing the category ID to delete and the reason for deletion.</param>
+        /// <returns>A response indicating whether the deletion was successful and the provided reason.</returns>
+        /// <exception cref="NotFoundException">Thrown if the category with the specified ID does not exist.</exception>
         public async Task<DeleteCategoryRespond> DeleteCategory(DeleteCategoryRequest request)
         {
             return await _unitOfWork.ProcessInTransactionAsync(async () =>
@@ -61,6 +67,13 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             });
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of categories, optionally filtered by a case-insensitive search term.
+        /// </summary>
+        /// <param name="page">The page number to retrieve (1-based).</param>
+        /// <param name="size">The number of categories per page.</param>
+        /// <param name="searchTerm">An optional term to filter categories by name.</param>
+        /// <returns>A paginated result containing category response objects matching the criteria.</returns>
         public async Task<IPaginate<GetCategoryRespond>> GetAllCategories(int page = 1, int size = 10, string searchTerm = null)
         {
             try
@@ -83,6 +96,12 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
         }
 
+        /// <summary>
+        /// Retrieves a category by its unique identifier.
+        /// </summary>
+        /// <param name="categoryId">The unique identifier of the category to retrieve.</param>
+        /// <returns>The category mapped to a <see cref="GetCategoryRespond"/> object.</returns>
+        /// <exception cref="NotFoundException">Thrown if the category with the specified ID does not exist.</exception>
         public async Task<GetCategoryRespond> GetCategoryById(Guid categoryId)
         {
             var category = await _unitOfWork.GetRepository<Category>().GetByIdAsync(categoryId);

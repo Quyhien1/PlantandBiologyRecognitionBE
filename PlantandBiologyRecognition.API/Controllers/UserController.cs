@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
@@ -47,6 +47,11 @@ namespace PlantandBiologyRecognition.API.Controllers
                 )
             );
         }
+        /// <summary>
+        /// Retrieves a user by their unique identifier.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user to retrieve.</param>
+        /// <returns>An IActionResult containing the user data if found, or an appropriate error response if not.</returns>
         [HttpGet(ApiEndPointConstant.Users.GetUserByIdEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<CreateUserRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -61,6 +66,13 @@ namespace PlantandBiologyRecognition.API.Controllers
                 user
             ));
         }
+        /// <summary>
+        /// Retrieves a paginated list of users, optionally filtered by a search term.
+        /// </summary>
+        /// <param name="page">The page number to retrieve. Defaults to 1.</param>
+        /// <param name="size">The number of users per page. Defaults to 10.</param>
+        /// <param name="searchTerm">An optional search term to filter users by name or other criteria.</param>
+        /// <returns>An <see cref="IActionResult"/> containing a paginated collection of users.</returns>
         [HttpGet(ApiEndPointConstant.Users.UsersEndPoint)]
         [ProducesResponseType(typeof(ApiResponse<IPaginate<CreateUserRespond>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]

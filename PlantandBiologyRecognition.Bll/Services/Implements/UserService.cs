@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -65,6 +65,11 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                 throw;
             }
         }
+        /// <summary>
+        /// Retrieves a user's details by their unique identifier.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user to retrieve.</param>
+        /// <returns>The user information mapped to a <see cref="CreateUserRespond"/> object.</returns>
         public async Task<CreateUserRespond> GetUserById(Guid userId)
         {
             try
@@ -87,6 +92,13 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of active users, optionally filtered by a search term matching name or email.
+        /// </summary>
+        /// <param name="page">The page number to retrieve (default is 1).</param>
+        /// <param name="size">The number of users per page (default is 10).</param>
+        /// <param name="searchTerm">An optional term to filter users by name or email (case-insensitive).</param>
+        /// <returns>A paginated result containing user response objects matching the criteria.</returns>
         public async Task<IPaginate<CreateUserRespond>> GetAllUsers(int page = 1, int size = 10, string searchTerm = null)
         {
             try

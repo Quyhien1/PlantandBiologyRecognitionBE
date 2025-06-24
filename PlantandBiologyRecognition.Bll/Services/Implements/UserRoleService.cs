@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -76,6 +76,11 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
         }
 
+        /// <summary>
+        /// Retrieves a user role by its unique identifier, including associated user information.
+        /// </summary>
+        /// <param name="roleId">The unique identifier of the user role to retrieve.</param>
+        /// <returns>The user role response corresponding to the specified role ID.</returns>
         public async Task<UserRoleRespond> GetUserRoleById(Guid roleId)
         {
             try
@@ -103,6 +108,13 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of user roles, optionally filtered by a search term in the role name.
+        /// </summary>
+        /// <param name="page">The page number to retrieve. Defaults to 1.</param>
+        /// <param name="size">The number of items per page. Defaults to 10.</param>
+        /// <param name="searchTerm">An optional search term to filter user roles by role name.</param>
+        /// <returns>A paginated list of user roles matching the specified criteria.</returns>
         public async Task<IPaginate<UserRoleRespond>> GetAllUserRoles(int page = 1, int size = 10, string searchTerm = null)
         {
             try
