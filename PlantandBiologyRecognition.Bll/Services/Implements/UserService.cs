@@ -6,6 +6,7 @@ using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.BLL.Utils;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.User;
 using PlantandBiologyRecognition.DAL.Payload.Respond.User;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
@@ -85,16 +86,23 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                 throw;
             }
         }
-        public async Task<IEnumerable<CreateUserRespond>> GetAllUsers()
+
+        public async Task<IPaginate<CreateUserRespond>> GetAllUsers(int page = 1, int size = 10, string searchTerm = null)
         {
             try
             {
-                var users = await _unitOfWork.GetRepository<User>()
-                    .GetListAsync(
-                    predicate: s => s.IsActive,
-                    orderBy: q => q.OrderByDescending(s => s.CreatedAt)
-                    );
-                return _mapper.Map<IEnumerable<CreateUserRespond>>(users);
+                string searchTermLower = searchTerm?.ToLower();
+                
+                return await _unitOfWork.GetRepository<User>().GetPagingListAsync(
+                    selector: x => _mapper.Map<CreateUserRespond>(x),
+                    predicate: x => x.IsActive && 
+                                   (string.IsNullOrWhiteSpace(searchTerm) || 
+                                    x.Name.ToLower().Contains(searchTermLower) || 
+                                    x.Email.ToLower().Contains(searchTermLower)),
+                    orderBy: q => q.OrderByDescending(x => x.CreatedAt),
+                    page: page,
+                    size: size
+                );
             }
             catch (Exception ex)
             {

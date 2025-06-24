@@ -19,9 +19,9 @@ namespace PlantandBiologyRecognition.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
         {
-            return Ok(await _service.GetAllTextbooklinks());
+            return Ok(await _service.GetAllTextbooklinks(page, size, searchTerm));
         }
 
         [HttpGet("{id}")]

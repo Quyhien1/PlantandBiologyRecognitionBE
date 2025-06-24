@@ -13,6 +13,7 @@ using PlantandBiologyRecognition.DAL.Payload.Request.UserRole;
 using PlantandBiologyRecognition.DAL.Payload.Respond.UserRole;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using PlantandBiologyRecognition.DAL.Paginate;
 
 namespace PlantandBiologyRecognition.BLL.Services.Implements
 {
@@ -102,18 +103,23 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             }
         }
 
-        public async Task<IEnumerable<UserRoleRespond>> GetAllUserRoles()
+        public async Task<IPaginate<UserRoleRespond>> GetAllUserRoles(int page = 1, int size = 10, string searchTerm = null)
         {
             try
             {
-                var userRoles = await _unitOfWork.GetRepository<Userrole>().GetListAsync(
-                    include: i => i.Include(x => x.User));
-
-                return _mapper.Map<IEnumerable<UserRoleRespond>>(userRoles);
+                string searchTermLower = searchTerm?.ToLower();
+                
+                return await _unitOfWork.GetRepository<Userrole>().GetPagingListAsync(
+                    selector: x => _mapper.Map<UserRoleRespond>(x),
+                    predicate: x => string.IsNullOrWhiteSpace(searchTerm) || 
+                                   x.RoleName.ToLower().Contains(searchTermLower),
+                    page: page,
+                    size: size
+                );
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving all user roles: {Message}", ex.Message);
+                _logger.LogError(ex, "Error retrieving user roles: {Message}", ex.Message);
                 throw;
             }
         }
