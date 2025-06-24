@@ -3,7 +3,7 @@ using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
-using PlantandBiologyRecognition.DAL.Payload.Request.TextBooLink;
+using PlantandBiologyRecognition.DAL.Payload.Request.TextbookLink;
 
 namespace PlantandBiologyRecognition.API.Controllers
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlantandBiologyRecognition.DAL.Payload.Request.TextBooLink
+namespace PlantandBiologyRecognition.DAL.Payload.Request.TextbookLink
 {
     public class CreateTextbooklinkRequest
     {

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
-using PlantandBiologyRecognition.DAL.Payload.Request.TextBooLink;
+using PlantandBiologyRecognition.DAL.Payload.Request.TextbookLink;
 using PlantandBiologyRecognition.DAL.Payload.Respond.TextbookLink;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 using System;

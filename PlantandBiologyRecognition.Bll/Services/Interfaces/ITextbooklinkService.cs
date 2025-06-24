@@ -1,5 +1,5 @@
 ﻿using PlantandBiologyRecognition.DAL.Models;
-using PlantandBiologyRecognition.DAL.Payload.Request.TextBooLink;
+using PlantandBiologyRecognition.DAL.Payload.Request.TextbookLink;
 using PlantandBiologyRecognition.DAL.Payload.Respond.TextbookLink;
 using System;
 using System.Collections.Generic;
