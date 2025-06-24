@@ -32,6 +32,7 @@ void ConfigureServices()
     builder.Services.AddScoped<ILearningTipService, LearningTipService>();
     builder.Services.AddScoped<IUserRoleService, UserRoleService>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<ITextbooklinkService, TextbooklinkService>();
     RegisterApplicationServices();
 }
 
