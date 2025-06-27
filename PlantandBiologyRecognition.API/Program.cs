@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using PlantandBiologyRecognition.BLL.Services;
 using Microsoft.OpenApi.Models;
 using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Repositories.Implements;
@@ -30,6 +29,10 @@ void ConfigureServices()
     builder.Services.AddScoped<IFeedbackService, FeedbackService>();
     builder.Services.AddScoped<ICategoryService, CategoryService>();
     builder.Services.AddScoped<ILearningTipService, LearningTipService>();
+    builder.Services.AddScoped<ISampleService, SampleService>();
+    builder.Services.AddScoped<ISampleDetailService, SampleDetailService>();
+    builder.Services.AddScoped<ISampleImageService, SampleImageService>();
+    builder.Services.AddScoped<ISavedSampleService, SavedSampleService>();
     RegisterApplicationServices();
 }
 
