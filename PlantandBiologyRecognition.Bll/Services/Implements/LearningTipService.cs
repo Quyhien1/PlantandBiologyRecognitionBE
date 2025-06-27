@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.LearningTip;
 using PlantandBiologyRecognition.DAL.Payload.Respond.LearningTip;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
@@ -58,10 +59,24 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             });
         }
 
-        public async Task<List<GetLearningTipRespond>> GetAllLearningTips()
+        public async Task<IPaginate<GetLearningTipRespond>> GetAllLearningTips(int page = 1, int size = 10, string searchTerm = null)
         {
-            var learningTips = await _unitOfWork.GetRepository<Learningtip>().GetListAsync();
-            return learningTips.Select(lt => _mapper.Map<GetLearningTipRespond>(lt)).ToList();
+            try
+            {
+                string searchTermLower = searchTerm?.ToLower();
+                return await _unitOfWork.GetRepository<Learningtip>().GetPagingListAsync(
+                    selector: x => _mapper.Map<GetLearningTipRespond>(x),
+                    predicate: x => string.IsNullOrWhiteSpace(searchTerm) || x.TipText.ToLower().Contains(searchTermLower),
+                    orderBy: q => q.OrderByDescending(x => x.TipId),
+                    page: page,
+                    size: size
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving paginated learning tips: {Message}", ex.Message);
+                throw;
+            }
         }
 
         public async Task<GetLearningTipRespond> GetLearningTipById(Guid tipId)
