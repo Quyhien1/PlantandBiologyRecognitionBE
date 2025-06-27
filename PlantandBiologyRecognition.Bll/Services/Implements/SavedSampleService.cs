@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.SavedSample;
 using PlantandBiologyRecognition.DAL.Payload.Respond.SavedSample;
 using PlantandBiologyRecognition.DAL.Repositories;
@@ -43,10 +44,24 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             return _mapper.Map<GetSavedSampleRespond>(savedSample);
         }
 
-        public async Task<List<GetSavedSampleRespond>> GetAllSavedSamples()
+        public async Task<IPaginate<GetSavedSampleRespond>> GetAllSavedSamples(int page = 1, int size = 10, string searchTerm = null)
         {
-            var savedSamples = await _unitOfWork.GetRepository<Savedsample>().GetListAsync();
-            return savedSamples.Select(ss => _mapper.Map<GetSavedSampleRespond>(ss)).ToList();
+            try
+            {
+                string searchTermLower = searchTerm?.ToLower();
+                return await _unitOfWork.GetRepository<Savedsample>().GetPagingListAsync(
+                    selector: x => _mapper.Map<GetSavedSampleRespond>(x),
+                    predicate: x => string.IsNullOrWhiteSpace(searchTerm),
+                    orderBy: q => q.OrderByDescending(x => x.SavedId),
+                    page: page,
+                    size: size
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving paginated saved samples: {Message}", ex.Message);
+                throw;
+            }
         }
 
         public async Task<UpdateSavedSampleRespond> UpdateSavedSample(UpdateSavedSampleRequest request)

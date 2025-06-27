@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.SampleImage;
 using PlantandBiologyRecognition.DAL.Payload.Respond.SampleImage;
 using PlantandBiologyRecognition.DAL.Repositories;
@@ -43,10 +44,24 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             return _mapper.Map<GetSampleImageRespond>(sampleImage);
         }
 
-        public async Task<List<GetSampleImageRespond>> GetAllSampleImages()
+        public async Task<IPaginate<GetSampleImageRespond>> GetAllSampleImages(int page = 1, int size = 10, string searchTerm = null)
         {
-            var sampleImages = await _unitOfWork.GetRepository<Sampleimage>().GetListAsync();
-            return sampleImages.Select(si => _mapper.Map<GetSampleImageRespond>(si)).ToList();
+            try
+            {
+                string searchTermLower = searchTerm?.ToLower();
+                return await _unitOfWork.GetRepository<Sampleimage>().GetPagingListAsync(
+                    selector: x => _mapper.Map<GetSampleImageRespond>(x),
+                    predicate: x => string.IsNullOrWhiteSpace(searchTerm) || x.Description.ToLower().Contains(searchTermLower),
+                    orderBy: q => q.OrderByDescending(x => x.ImageId),
+                    page: page,
+                    size: size
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving paginated sample images: {Message}", ex.Message);
+                throw;
+            }
         }
 
         public async Task<UpdateSampleImageRespond> UpdateSampleImage(UpdateSampleImageRequest request)

@@ -29,6 +29,9 @@ void ConfigureServices()
     builder.Services.AddScoped<IFeedbackService, FeedbackService>();
     builder.Services.AddScoped<ICategoryService, CategoryService>();
     builder.Services.AddScoped<ILearningTipService, LearningTipService>();
+    builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<ITextbooklinkService, TextbooklinkService>();
     builder.Services.AddScoped<ISampleService, SampleService>();
     builder.Services.AddScoped<ISampleDetailService, SampleDetailService>();
     builder.Services.AddScoped<ISampleImageService, SampleImageService>();
@@ -51,9 +54,7 @@ app.Run();
 void RegisterApplicationServices()
 {
     // Register your service so it can resolve dependencies
-   builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
-
 }
 
 void ConfigureSwagger()

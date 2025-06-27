@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
 using PlantandBiologyRecognition.DAL.Payload.Request.LearningTip;
@@ -62,9 +63,9 @@ namespace PlantandBiologyRecognition.API.Controllers
 
         [HttpGet(ApiEndPointConstant.LearningTips.GetAllLearningTips)]
         [ProducesResponseType(typeof(ApiResponse<List<GetLearningTipRespond>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllLearningTips()
+        public async Task<IActionResult> GetAllLearningTips([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
         {
-            var response = await _learningTipService.GetAllLearningTips();
+            var response = await _learningTipService.GetAllLearningTips(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(200, "All learning tips retrieved", response));
         }
 

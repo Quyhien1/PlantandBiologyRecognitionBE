@@ -62,9 +62,9 @@ namespace PlantandBiologyRecognition.API.Controllers
 
         [HttpGet(ApiEndPointConstant.Samples.GetAllSamples)]
         [ProducesResponseType(typeof(ApiResponse<List<GetSampleRespond>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllSamples()
+        public async Task<IActionResult> GetAllSample([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
         {
-            var response = await _sampleService.GetAllSamples();
+            var response = await _sampleService.GetAllSamples(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(200, "All samples retrieved", response));
         }
 

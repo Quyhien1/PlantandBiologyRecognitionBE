@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
 using PlantandBiologyRecognition.DAL.Payload.Request.SavedSample;
@@ -62,9 +63,9 @@ namespace PlantandBiologyRecognition.API.Controllers
 
         [HttpGet(ApiEndPointConstant.SavedSamples.GetAllSavedSamples)]
         [ProducesResponseType(typeof(ApiResponse<List<GetSavedSampleRespond>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllSavedSamples()
+        public async Task<IActionResult> GetAllSavedSample([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
         {
-            var response = await _savedSampleService.GetAllSavedSamples();
+            var response = await _savedSampleService.GetAllSavedSamples(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(200, "All saved samples retrieved", response));
         }
 

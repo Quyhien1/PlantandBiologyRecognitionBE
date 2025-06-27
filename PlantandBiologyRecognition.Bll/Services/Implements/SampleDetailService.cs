@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.SampleDetail;
 using PlantandBiologyRecognition.DAL.Payload.Respond.SampleDetail;
 using PlantandBiologyRecognition.DAL.Repositories;
@@ -43,10 +44,24 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             return _mapper.Map<GetSampleDetailRespond>(sampleDetail);
         }
 
-        public async Task<List<GetSampleDetailRespond>> GetAllSampleDetails()
+        public async Task<IPaginate<GetSampleDetailRespond>> GetAllSampleDetails(int page = 1, int size = 10, string searchTerm = null)
         {
-            var sampleDetails = await _unitOfWork.GetRepository<Sampledetail>().GetListAsync();
-            return sampleDetails.Select(sd => _mapper.Map<GetSampleDetailRespond>(sd)).ToList();
+            try
+            {
+                string searchTermLower = searchTerm?.ToLower();
+                return await _unitOfWork.GetRepository<Sampledetail>().GetPagingListAsync(
+                    selector: x => _mapper.Map<GetSampleDetailRespond>(x),
+                    predicate: x => string.IsNullOrWhiteSpace(searchTerm) || x.Description.ToLower().Contains(searchTermLower),
+                    orderBy: q => q.OrderByDescending(x => x.DetailId),
+                    page: page,
+                    size: size
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving paginated sample details: {Message}", ex.Message);
+                throw;
+            }
         }
 
         public async Task<UpdateSampleDetailRespond> UpdateSampleDetail(UpdateSampleDetailRequest request)

@@ -5,10 +5,21 @@
         public const string RootEndPoint = "/api";
         public const string Apiversion = "/v1";
         public const string ApiEndPoint = RootEndPoint + Apiversion;
-        public static class User
+        public static class Users
         {
-            public const string UserEndPoint = ApiEndPoint + "/user";
-            public const string CreateUser = UserEndPoint + "/create-user";
+            public const string UsersEndPoint = ApiEndPoint + "/users";
+            public const string CreateUserEndpoint = UsersEndPoint + "/create-user";
+            public const string GetUserByIdEndpoint = UsersEndPoint + "/get-user-by-id/{userId}";
+            public const string DeleteUserEndpoint = UsersEndPoint + "/delete-user/{userId}";
+            public const string UpdateUserEndpoint = UsersEndPoint + "/update-user/{userId}";
+        }
+        public static class UserRoles
+        {
+            public const string UserRolesEndPoint = ApiEndPoint + "/user-roles";
+            public const string GetUserRoleByIdEndpoint = UserRolesEndPoint + "/{roleId}";
+            public const string GetUserRolesByUserIdEndpoint = UserRolesEndPoint + "/user/{userId}";
+            public const string DeleteUserRoleEndpoint = UserRolesEndPoint + "/{roleId}";
+            public const string UpdateUserRoleEndpoint = UserRolesEndPoint + "/{roleId}";
         }
         public static class Feedbacks
         {
