@@ -258,8 +258,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.LinkId)
                 .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("link_id");
-            entity.Property(e => e.ContentSummary).HasColumnName("content_summary");
-            entity.Property(e => e.PageNumber).HasColumnName("page_number");
+            entity.Property(e => e.Lesson).HasColumnName("lesson");
             entity.Property(e => e.SampleId).HasColumnName("sample_id");
             entity.Property(e => e.TextbookName)
                 .HasColumnType("character varying")
