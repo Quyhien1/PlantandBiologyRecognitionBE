@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlantandBiologyRecognition.DLL\PlantandBiologyRecognition.DAL.csproj" />
+    <ProjectReference Include="..\PlantandBiologyRecognition.DAL\PlantandBiologyRecognition.DAL.csproj" />
   </ItemGroup>
 
 </Project>

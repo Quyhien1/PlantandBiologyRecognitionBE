@@ -12,7 +12,7 @@ using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 
 namespace PlantandBiologyRecognition.BLL.Services.Implements
 {
-    public class SampleService : BaseService<SampleImageService>, ISampleService
+    public class SampleService : BaseService<SampleService>, ISampleService
     {
         public SampleService(IUnitOfWork<AppDbContext> unitOfWork, ILogger<SampleService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(unitOfWork, logger, mapper, httpContextAccessor)

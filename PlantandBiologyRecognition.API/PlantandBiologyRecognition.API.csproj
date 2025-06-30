@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PlantandBiologyRecognition.Bll\PlantandBiologyRecognition.BLL.csproj" />
-    <ProjectReference Include="..\PlantandBiologyRecognition.DLL\PlantandBiologyRecognition.DAL.csproj" />
   </ItemGroup>
 
 </Project>
