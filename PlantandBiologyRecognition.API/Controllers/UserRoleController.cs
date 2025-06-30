@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.API.Validators;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.UserRole;
 using PlantandBiologyRecognition.DAL.Payload.Respond.UserRole;
 using System;
@@ -20,7 +23,7 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _userRoleService = userRoleService;
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpPost(ApiEndPointConstant.UserRoles.UserRolesEndPoint)]
         [ProducesResponseType(typeof(ApiResponse<UserRoleRespond>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -46,7 +49,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 )
             );
         }
-
+        [CustomAuthorize(RoleName.Admin)]
         [HttpGet(ApiEndPointConstant.UserRoles.GetUserRoleByIdEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<UserRoleRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -60,20 +63,20 @@ namespace PlantandBiologyRecognition.API.Controllers
                 userRole
             ));
         }
-
+        [CustomAuthorize(RoleName.Admin)]
         [HttpGet(ApiEndPointConstant.UserRoles.UserRolesEndPoint)]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserRoleRespond>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IPaginate<UserRoleRespond>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllUserRoles()
+        public async Task<IActionResult> GetAllUserRoles([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
         {
-            var userRoles = await _userRoleService.GetAllUserRoles();
+            var userRoles = await _userRoleService.GetAllUserRoles(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(
                 StatusCodes.Status200OK,
                 "User roles retrieved successfully",
                 userRoles
             ));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.UserRoles.GetUserRolesByUserIdEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserRoleRespond>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -87,7 +90,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 userRoles
             ));
         }
-
+        [CustomAuthorize(RoleName.Admin,RoleName.Student,RoleName.Teacher)]
         [HttpDelete(ApiEndPointConstant.UserRoles.DeleteUserRoleEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -101,7 +104,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 isDeleted
             ));
         }
-
+        [CustomAuthorize(RoleName.Admin)]
         [HttpPut(ApiEndPointConstant.UserRoles.UpdateUserRoleEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<UserRoleRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

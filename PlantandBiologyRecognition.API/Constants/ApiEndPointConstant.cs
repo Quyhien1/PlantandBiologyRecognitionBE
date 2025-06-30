@@ -5,6 +5,11 @@
         public const string RootEndPoint = "/api";
         public const string Apiversion = "/v1";
         public const string ApiEndPoint = RootEndPoint + Apiversion;
+        public static class Auth
+        {
+            public const string Login = "auth/login";
+            public const string RefreshToken = "auth/refresh-token";
+        }
         public static class Users
         {
             public const string UsersEndPoint = ApiEndPoint + "/users";
@@ -48,5 +53,42 @@
             public const string GetLearningTipById = LearningTipEndpoint + "/{id}";
             public const string GetAllLearningTips = LearningTipEndpoint + "/all";
         }
+        public static class Samples
+        {
+            public const string SampleEndpoint = ApiEndPoint + "/sample";
+            public const string CreateSample = SampleEndpoint + "/create";
+            public const string UpdateSample = SampleEndpoint + "/update";
+            public const string DeleteSample = SampleEndpoint + "/delete";
+            public const string GetSampleById = SampleEndpoint + "/{id}";
+            public const string GetAllSamples = SampleEndpoint + "/all";
+        }
+        public static class SampleDetails
+        {
+            public const string SampleDetailEndpoint = ApiEndPoint + "/sample-detail";
+            public const string CreateSampleDetail = SampleDetailEndpoint + "/create";
+            public const string UpdateSampleDetail = SampleDetailEndpoint + "/update";
+            public const string DeleteSampleDetail = SampleDetailEndpoint + "/delete";
+            public const string GetSampleDetailById = SampleDetailEndpoint + "/{id}";
+            public const string GetAllSampleDetails = SampleDetailEndpoint + "/all";
+        }
+        public static class SampleImages
+        {
+            public const string SampleImageEndpoint = ApiEndPoint + "/sample-image";
+            public const string CreateSampleImage = SampleImageEndpoint + "/create";
+            public const string UpdateSampleImage = SampleImageEndpoint + "/update";
+            public const string DeleteSampleImage = SampleImageEndpoint + "/delete";
+            public const string GetSampleImageById = SampleImageEndpoint + "/{id}";
+            public const string GetAllSampleImages = SampleImageEndpoint + "/all";
+        }
+        public static class SavedSamples
+        {
+            public const string SavedSampleEndpoint = ApiEndPoint + "/saved-sample";
+            public const string CreateSavedSample = SavedSampleEndpoint + "/create";
+            public const string UpdateSavedSample = SavedSampleEndpoint + "/update";
+            public const string DeleteSavedSample = SavedSampleEndpoint + "/delete";
+            public const string GetSavedSampleById = SavedSampleEndpoint + "/{id}";
+            public const string GetAllSavedSamples = SavedSampleEndpoint + "/all";
+        }
+        
     }
 }

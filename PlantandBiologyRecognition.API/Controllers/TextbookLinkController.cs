@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PlantandBiologyRecognition.API.Validators;
 using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.Exceptions;
@@ -17,13 +18,13 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _service = service;
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
         {
-            return Ok(await _service.GetAllTextbooklinks());
+            return Ok(await _service.GetAllTextbooklinks(page, size, searchTerm));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher, RoleName.Student)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -36,14 +37,14 @@ namespace PlantandBiologyRecognition.API.Controllers
                 return NotFound(ex.Message);
             }
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTextbooklinkRequest request)
         {
             var result = await _service.CreateTextbooklink(request);
             return CreatedAtAction(nameof(GetById), new { id = result.LinkId }, result);
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] UpdateTextbooklinkRequest request)
         {
@@ -57,7 +58,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 return NotFound(ex.Message);
             }
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpDelete]
         public async Task<IActionResult> Delete([FromBody] DeleteTextbooklinkRequest request)
         {

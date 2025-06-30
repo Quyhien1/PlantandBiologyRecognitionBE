@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.API.Validators;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Models;
+using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.Feedback;
 using PlantandBiologyRecognition.DAL.Payload.Respond.Feedback;
 
@@ -17,7 +20,7 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _feedbackService = feedbackService;
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpPost(ApiEndPointConstant.Feedbacks.CreateFeedback)]
         [ProducesResponseType(typeof(ApiResponse<CreateFeedbackRespond>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -41,7 +44,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 response
             ));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.Feedbacks.GetFeedbackById)]
         [ProducesResponseType(typeof(ApiResponse<GetFeedbackRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -59,12 +62,12 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.Feedbacks.GetAllFeedbacks)]
-        [ProducesResponseType(typeof(ApiResponse<List<GetFeedbackRespond>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllFeedbacks()
+        [ProducesResponseType(typeof(ApiResponse<IPaginate<GetFeedbackRespond>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllFeedbacks([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
         {
-            var response = await _feedbackService.GetAllFeedbacks();
+            var response = await _feedbackService.GetAllFeedbacks(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(200, "All feedbacks retrieved", response));
         }
 
@@ -85,7 +88,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-
+        [CustomAuthorize(RoleName.Admin)]
         [HttpDelete(ApiEndPointConstant.Feedbacks.DeleteFeedback)]
         [ProducesResponseType(typeof(ApiResponse<DeleteFeedbackRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

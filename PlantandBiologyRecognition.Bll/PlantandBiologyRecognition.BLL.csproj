@@ -10,11 +10,12 @@
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="CloudinaryDotNet" Version="1.27.5" />
+    <PackageReference Include="LinqKit" Version="1.3.8" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlantandBiologyRecognition.DLL\PlantandBiologyRecognition.DAL.csproj" />
+    <ProjectReference Include="..\PlantandBiologyRecognition.DAL\PlantandBiologyRecognition.DAL.csproj" />
   </ItemGroup>
 
 </Project>
