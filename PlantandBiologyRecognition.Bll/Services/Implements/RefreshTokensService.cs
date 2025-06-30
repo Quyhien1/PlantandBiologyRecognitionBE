@@ -55,7 +55,11 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                 var user = await _unitOfWork.GetRepository<User>().GetByIdAsync(storedToken.UserId);
                 if (user == null) throw new Exception("User not found");
 
-                return _jwtUtil.GenerateJwtToken(user);
+                var userRoles = await _unitOfWork.GetRepository<Userrole>()
+               .GetListAsync(predicate: r => r.UserId == user.UserId);
+                var roleNames = userRoles.Select(r => r.RoleName).ToList();
+
+                return _jwtUtil.GenerateJwtToken(user, roleNames);;
             });
         }
 

@@ -8,6 +8,8 @@ using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Payload.Request.Auth;
 using PlantandBiologyRecognition.DAL.Payload.Respond.Auth;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PlantandBiologyRecognition.BLL.Services.Implements
@@ -43,7 +45,13 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
 
             var loginResponse = new LoginResponse();
 
-            var token = _jwtUtil.GenerateJwtToken(user);
+            // Fetch user roles here
+            var userRoles = await _unitOfWork.GetRepository<Userrole>()
+                .GetListAsync(predicate: r => r.UserId == user.UserId);
+            var roleNames = userRoles.Select(r => r.RoleName).ToList();
+
+            // Pass user and roles to JwtUtil
+            var token = _jwtUtil.GenerateJwtToken(user, roleNames);
             var refreshToken = await _refreshTokensService.GenerateAndStoreRefreshToken(user.UserId);
 
             loginResponse.AccessToken = token;
