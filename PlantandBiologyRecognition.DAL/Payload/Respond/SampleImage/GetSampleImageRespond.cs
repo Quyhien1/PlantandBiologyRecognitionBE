@@ -1,3 +1,4 @@
+using System;
 namespace PlantandBiologyRecognition.DAL.Payload.Respond.SampleImage
 {
     public class GetSampleImageRespond
