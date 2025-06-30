@@ -13,9 +13,9 @@ public partial class Textbooklink
 
     public string TextbookName { get; set; }
 
-    public int? PageNumber { get; set; }
+    public int? Chapter { get; set; }
 
-    public string ContentSummary { get; set; }
+    public string Lesson { get; set; }
 
     public virtual Sample Sample { get; set; }
 }

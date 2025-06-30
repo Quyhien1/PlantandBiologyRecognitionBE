@@ -1,8 +1,10 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.API.Validators;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.Category;
 using PlantandBiologyRecognition.DAL.Payload.Respond.Category;
@@ -18,7 +20,7 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _categoryService = categoryService;
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPost(ApiEndPointConstant.Categories.CreateCategory)]
         [ProducesResponseType(typeof(ApiResponse<CreateCategoryRespond>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -42,7 +44,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 response
             ));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.Categories.GetCategoryById)]
         [ProducesResponseType(typeof(ApiResponse<GetCategoryRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -60,7 +62,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.Categories.GetAllCategories)]
         [ProducesResponseType(typeof(ApiResponse<IPaginate<GetCategoryRespond>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCategories([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)

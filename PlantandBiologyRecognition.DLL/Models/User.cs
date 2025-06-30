@@ -25,6 +25,8 @@ public partial class User
 
     public virtual ICollection<Recognitionhistory> Recognitionhistories { get; set; } = new List<Recognitionhistory>();
 
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+
     public virtual ICollection<Savedsample> Savedsamples { get; set; } = new List<Savedsample>();
 
     public virtual ICollection<Userrole> Userroles { get; set; } = new List<Userrole>();

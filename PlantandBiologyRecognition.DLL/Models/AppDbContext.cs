@@ -23,6 +23,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Recognitionhistory> Recognitionhistories { get; set; }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public virtual DbSet<Sample> Samples { get; set; }
 
     public virtual DbSet<Sampledetail> Sampledetails { get; set; }
@@ -161,6 +163,29 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("recognitionhistory_user_id_fkey");
         });
 
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("RefreshTokens_pkey");
+
+            entity.ToTable("RefreshTokens", "plantandbiologyrecognition");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("id");
+            entity.Property(e => e.CreateAt).HasColumnName("create_at");
+            entity.Property(e => e.ExpiresAt).HasColumnName("expires_at");
+            entity.Property(e => e.Token)
+                .HasColumnType("character varying")
+                .HasColumnName("token");
+            entity.Property(e => e.UserId)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("RefreshTokens_user_id_fkey");
+        });
+
         modelBuilder.Entity<Sample>(entity =>
         {
             entity.HasKey(e => e.SampleId).HasName("samples_pkey");
@@ -258,8 +283,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.LinkId)
                 .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("link_id");
-            entity.Property(e => e.ContentSummary).HasColumnName("content_summary");
-            entity.Property(e => e.PageNumber).HasColumnName("page_number");
+            entity.Property(e => e.Lesson).HasColumnName("lesson");
             entity.Property(e => e.SampleId).HasColumnName("sample_id");
             entity.Property(e => e.TextbookName)
                 .HasColumnType("character varying")

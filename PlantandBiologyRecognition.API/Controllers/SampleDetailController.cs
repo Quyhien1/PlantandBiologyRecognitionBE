@@ -1,9 +1,11 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.API.Validators;
 using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Payload.Request.SampleDetail;
 using PlantandBiologyRecognition.DAL.Payload.Respond.SampleDetail;
 
@@ -18,7 +20,7 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _sampleDetailService = sampleDetailService;
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPost(ApiEndPointConstant.SampleDetails.CreateSampleDetail)]
         [ProducesResponseType(typeof(ApiResponse<CreateSampleDetailRespond>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -42,7 +44,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 response
             ));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.SampleDetails.GetSampleDetailById)]
         [ProducesResponseType(typeof(ApiResponse<GetSampleDetailRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -60,7 +62,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.SampleDetails.GetAllSampleDetails)]
         [ProducesResponseType(typeof(ApiResponse<List<GetSampleDetailRespond>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllSampleDetail([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
@@ -86,7 +88,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpDelete(ApiEndPointConstant.SampleDetails.DeleteSampleDetail)]
         [ProducesResponseType(typeof(ApiResponse<DeleteSampleDetailRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
