@@ -5,6 +5,11 @@
         public const string RootEndPoint = "/api";
         public const string Apiversion = "/v1";
         public const string ApiEndPoint = RootEndPoint + Apiversion;
+        public static class Auth
+        {
+            public const string Login = "auth/login";
+            public const string RefreshToken = "auth/refresh-token";
+        }
         public static class Users
         {
             public const string UsersEndPoint = ApiEndPoint + "/users";
@@ -84,5 +89,6 @@
             public const string GetSavedSampleById = SavedSampleEndpoint + "/{id}";
             public const string GetAllSavedSamples = SavedSampleEndpoint + "/all";
         }
+        
     }
 }

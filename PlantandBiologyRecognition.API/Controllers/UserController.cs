@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.API.Validators;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.User;
 using PlantandBiologyRecognition.DAL.Payload.Respond.User;
@@ -18,7 +20,7 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _userService = userService;
         }
-
+        
         [HttpPost(ApiEndPointConstant.Users.UsersEndPoint)]
         [ProducesResponseType(typeof(ApiResponse<CreateUserRespond>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -47,6 +49,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 )
             );
         }
+        [CustomAuthorize(RoleName.Admin)]
         [HttpGet(ApiEndPointConstant.Users.GetUserByIdEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<CreateUserRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -61,6 +64,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 user
             ));
         }
+        [CustomAuthorize(RoleName.Admin)]
         [HttpGet(ApiEndPointConstant.Users.UsersEndPoint)]
         [ProducesResponseType(typeof(ApiResponse<IPaginate<CreateUserRespond>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -96,6 +100,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 isDeleted
             ));
         }
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpPut(ApiEndPointConstant.Users.UpdateUserEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<UpdateUserRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

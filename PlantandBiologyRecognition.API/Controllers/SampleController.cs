@@ -1,8 +1,10 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.API.Validators;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Payload.Request.Sample;
 using PlantandBiologyRecognition.DAL.Payload.Respond.Sample;
 
@@ -17,7 +19,7 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _sampleService = sampleService;
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPost(ApiEndPointConstant.Samples.CreateSample)]
         [ProducesResponseType(typeof(ApiResponse<CreateSampleRespond>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -41,7 +43,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 response
             ));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.Samples.GetSampleById)]
         [ProducesResponseType(typeof(ApiResponse<GetSampleRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -59,7 +61,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.Samples.GetAllSamples)]
         [ProducesResponseType(typeof(ApiResponse<List<GetSampleRespond>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllSample([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
@@ -85,7 +87,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpDelete(ApiEndPointConstant.Samples.DeleteSample)]
         [ProducesResponseType(typeof(ApiResponse<DeleteSampleRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

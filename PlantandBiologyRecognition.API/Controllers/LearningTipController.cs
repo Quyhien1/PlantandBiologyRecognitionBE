@@ -1,9 +1,11 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.API.Validators;
 using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Payload.Request.LearningTip;
 using PlantandBiologyRecognition.DAL.Payload.Respond.LearningTip;
 
@@ -18,7 +20,7 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _learningTipService = learningTipService;
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPost(ApiEndPointConstant.LearningTips.CreateLearningTip)]
         [ProducesResponseType(typeof(ApiResponse<CreateLearningTipRespond>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -42,7 +44,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 response
             ));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.LearningTips.GetLearningTipById)]
         [ProducesResponseType(typeof(ApiResponse<GetLearningTipRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -60,7 +62,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.LearningTips.GetAllLearningTips)]
         [ProducesResponseType(typeof(ApiResponse<List<GetLearningTipRespond>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllLearningTips([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string searchTerm = null)
