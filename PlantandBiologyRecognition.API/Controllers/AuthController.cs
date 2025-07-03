@@ -72,5 +72,30 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
+        
+        [HttpPost(ApiEndPointConstant.Auth.LogOut)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest request)
+        {
+            try
+            {
+                var result = await _refreshTokensService.DeleteRefreshToken(request.RefreshToken);
+                return Ok(ApiResponseBuilder.BuildResponse<object>(
+                    StatusCodes.Status200OK,
+                    result ? "Logout successful" : "No active session found",
+                    null
+                ));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null,
+                    StatusCodes.Status400BadRequest,
+                    "Logout failed",
+                    ex.Message
+                ));
+            }
+        }
     }
 }

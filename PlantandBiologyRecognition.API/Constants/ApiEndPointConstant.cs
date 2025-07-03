@@ -9,6 +9,7 @@
         {
             public const string Login = "auth/login";
             public const string RefreshToken = "auth/refresh-token";
+            public const string LogOut = "auth/log-out";
         }
         public static class Users
         {

@@ -29,6 +29,7 @@ namespace PlantandBiologyRecognition.BLL.Utils
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("UserId", user.UserId.ToString())
             };
 
