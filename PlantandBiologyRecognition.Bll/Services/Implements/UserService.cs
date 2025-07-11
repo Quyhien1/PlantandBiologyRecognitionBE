@@ -33,42 +33,39 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
         {
             try
             {
+                if (createUserRequest == null)
+                {
+                    throw new ArgumentNullException(nameof(createUserRequest), "Create user request cannot be null.");
+                }
+
                 var existingUser = await _unitOfWork.GetRepository<User>().SingleOrDefaultAsync(predicate: s => s.Email == createUserRequest.Email);
                 if (existingUser != null)
                 {
                     throw new BusinessException("Email is already in use. Please use a different email.");
                 }
-                if (createUserRequest == null)
+                
+                // Use transaction to ensure both user creation and role assignment succeed or fail together
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
-                    throw new ArgumentNullException(nameof(createUserRequest), "Create user request cannot be null.");
-                }
-                var newUser = _mapper.Map<User>(createUserRequest);
-                newUser.UserId = Guid.NewGuid();
-                newUser.CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
-                newUser.PasswordHash = PasswordUtil.HashPassword(createUserRequest.Password);
-                newUser.IsActive = true;
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (createUserRequest.Avatar != null && user != null)
-                {
-                    newUser.Avatar = await _cloudinaryService.UploadImageAsync(createUserRequest.Avatar, user);
-                }
-                else
-                {
-                    newUser.Avatar = DefaultProfilePicture;
-                }
-                await _unitOfWork.GetRepository<User>().InsertAsync(newUser);
-                await _unitOfWork.CommitAsync();
-
-                // Automatically assign Student role to the new user
-                try
-                {
-                    var userRoleRequest = new CreateUserRoleRequest
-                    {
-                        UserId = newUser.UserId,
-                        RoleName = RoleName.Student
-                    };
+                    var newUser = _mapper.Map<User>(createUserRequest);
+                    newUser.UserId = Guid.NewGuid();
+                    newUser.CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                    newUser.PasswordHash = PasswordUtil.HashPassword(createUserRequest.Password);
+                    newUser.IsActive = true;
                     
-                    // Use repository directly since we're inside a service
+                    var user = _httpContextAccessor.HttpContext?.User;
+                    if (createUserRequest.Avatar != null && user != null)
+                    {
+                        newUser.Avatar = await _cloudinaryService.UploadImageAsync(createUserRequest.Avatar, user);
+                    }
+                    else
+                    {
+                        newUser.Avatar = DefaultProfilePicture;
+                    }
+                    
+                    await _unitOfWork.GetRepository<User>().InsertAsync(newUser);
+                    
+                    // Create Student role for the new user within the same transaction
                     var newUserRole = new Userrole
                     {
                         RoleId = Guid.NewGuid(),
@@ -77,15 +74,11 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                     };
 
                     await _unitOfWork.GetRepository<Userrole>().InsertAsync(newUserRole);
-                    await _unitOfWork.CommitAsync();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Failed to assign Student role to new user {UserId}, but user was created successfully", newUser.UserId);
-                    // We don't rethrow here to avoid preventing user creation if role assignment fails
-                }
-
-                return _mapper.Map<CreateUserRespond>(newUser);
+                    
+                    // Commit happens automatically at the end of ProcessInTransactionAsync
+                    
+                    return _mapper.Map<CreateUserRespond>(newUser);
+                });
             }
             catch (Exception ex)
             {
