@@ -8,6 +8,7 @@ using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.User;
+using PlantandBiologyRecognition.DAL.Payload.Request.UserRole;
 using PlantandBiologyRecognition.DAL.Payload.Respond.User;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 using System;
@@ -32,32 +33,52 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
         {
             try
             {
+                if (createUserRequest == null)
+                {
+                    throw new ArgumentNullException(nameof(createUserRequest), "Create user request cannot be null.");
+                }
+
                 var existingUser = await _unitOfWork.GetRepository<User>().SingleOrDefaultAsync(predicate: s => s.Email == createUserRequest.Email);
                 if (existingUser != null)
                 {
                     throw new BusinessException("Email is already in use. Please use a different email.");
                 }
-                if (createUserRequest == null)
+                
+                // Use transaction to ensure both user creation and role assignment succeed or fail together
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
-                    throw new ArgumentNullException(nameof(createUserRequest), "Create user request cannot be null.");
-                }
-                var newUser = _mapper.Map<User>(createUserRequest);
-                newUser.UserId = Guid.NewGuid();
-                newUser.CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
-                newUser.PasswordHash = PasswordUtil.HashPassword(createUserRequest.Password);
-                newUser.IsActive = true;
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (createUserRequest.Avatar != null && user != null)
-                {
-                    newUser.Avatar = await _cloudinaryService.UploadImageAsync(createUserRequest.Avatar, user);
-                }
-                else
-                {
-                    newUser.Avatar = DefaultProfilePicture;
-                }
-                await _unitOfWork.GetRepository<User>().InsertAsync(newUser);
-                await _unitOfWork.CommitAsync();
-                return _mapper.Map<CreateUserRespond>(newUser);
+                    var newUser = _mapper.Map<User>(createUserRequest);
+                    newUser.UserId = Guid.NewGuid();
+                    newUser.CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                    newUser.PasswordHash = PasswordUtil.HashPassword(createUserRequest.Password);
+                    newUser.IsActive = true;
+                    
+                    var user = _httpContextAccessor.HttpContext?.User;
+                    if (createUserRequest.Avatar != null && user != null)
+                    {
+                        newUser.Avatar = await _cloudinaryService.UploadImageAsync(createUserRequest.Avatar, user);
+                    }
+                    else
+                    {
+                        newUser.Avatar = DefaultProfilePicture;
+                    }
+                    
+                    await _unitOfWork.GetRepository<User>().InsertAsync(newUser);
+                    
+                    // Create Student role for the new user within the same transaction
+                    var newUserRole = new Userrole
+                    {
+                        RoleId = Guid.NewGuid(),
+                        UserId = newUser.UserId,
+                        RoleName = RoleName.Student.ToString()
+                    };
+
+                    await _unitOfWork.GetRepository<Userrole>().InsertAsync(newUserRole);
+                    
+                    // Commit happens automatically at the end of ProcessInTransactionAsync
+                    
+                    return _mapper.Map<CreateUserRespond>(newUser);
+                });
             }
             catch (Exception ex)
             {
