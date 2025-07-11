@@ -8,6 +8,7 @@ using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Paginate;
 using PlantandBiologyRecognition.DAL.Payload.Request.User;
+using PlantandBiologyRecognition.DAL.Payload.Request.UserRole;
 using PlantandBiologyRecognition.DAL.Payload.Respond.User;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 using System;
@@ -57,6 +58,33 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                 }
                 await _unitOfWork.GetRepository<User>().InsertAsync(newUser);
                 await _unitOfWork.CommitAsync();
+
+                // Automatically assign Student role to the new user
+                try
+                {
+                    var userRoleRequest = new CreateUserRoleRequest
+                    {
+                        UserId = newUser.UserId,
+                        RoleName = RoleName.Student
+                    };
+                    
+                    // Use repository directly since we're inside a service
+                    var newUserRole = new Userrole
+                    {
+                        RoleId = Guid.NewGuid(),
+                        UserId = newUser.UserId,
+                        RoleName = RoleName.Student.ToString()
+                    };
+
+                    await _unitOfWork.GetRepository<Userrole>().InsertAsync(newUserRole);
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to assign Student role to new user {UserId}, but user was created successfully", newUser.UserId);
+                    // We don't rethrow here to avoid preventing user creation if role assignment fails
+                }
+
                 return _mapper.Map<CreateUserRespond>(newUser);
             }
             catch (Exception ex)
