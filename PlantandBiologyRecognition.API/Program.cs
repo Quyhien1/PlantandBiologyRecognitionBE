@@ -11,7 +11,9 @@ using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Repositories.Implements;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using PlantandBiologyRecognition.DAL.MetaDatas;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,16 +34,12 @@ app.UseCors(options =>
           .AllowAnyHeader()
           .AllowCredentials();
 });
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 void ConfigureServices()
 {
-    builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
-
-    RegisterApplicationServices();
-
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -60,9 +58,35 @@ void ConfigureServices()
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
         };
-    });
-}
 
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+
+                var result = JsonSerializer.Serialize(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null,
+                    StatusCodes.Status401Unauthorized,
+                    "Unauthorized",
+                    "Invalid or missing authentication token"
+                ));
+
+                return context.Response.WriteAsync(result);
+            }
+        };
+    });
+
+    builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+    RegisterApplicationServices();
+}
 
 //if (app.Environment.IsDevelopment())
 //{
@@ -70,8 +94,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 //}
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
