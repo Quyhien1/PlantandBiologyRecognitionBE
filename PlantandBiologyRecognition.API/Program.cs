@@ -86,7 +86,7 @@ void RegisterApplicationServices()
     builder.Services.AddScoped<ILearningTipService, LearningTipService>();
     builder.Services.AddScoped<IUserRoleService, UserRoleService>();
     builder.Services.AddScoped<IUserService, UserService>();
-    // builder.Services.AddScoped<ITextbooklinkService, TextbooklinkService>();
+    builder.Services.AddScoped<ITextbooklinkService, TextbooklinkService>();
     builder.Services.AddScoped<ISampleService, SampleService>();
     builder.Services.AddScoped<ISampleDetailService, SampleDetailService>();
     builder.Services.AddScoped<ISampleImageService, SampleImageService>();

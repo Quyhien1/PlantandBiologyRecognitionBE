@@ -10,7 +10,7 @@ namespace PlantandBiologyRecognition.DAL.Payload.Request.TextbookLink
     {
         public Guid? SampleId { get; set; }
         public string TextbookName { get; set; }
-        public int? PageNumber { get; set; }
-        public string ContentSummary { get; set; }
+        public int? Chapter { get; set; }
+        public string Lesson { get; set; }
     }
 }
