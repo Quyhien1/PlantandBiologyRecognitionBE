@@ -18,7 +18,7 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
     {
         private readonly JwtUtil _jwtUtil;
         private readonly IRefreshTokensService _refreshTokensService;
-    
+
         public AuthService(
             IUnitOfWork<AppDbContext> unitOfWork,
             ILogger<CategoryService> logger,
@@ -57,6 +57,51 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             loginResponse.AccessToken = token;
             loginResponse.RefreshToken = refreshToken;
             return loginResponse;
+        }
+
+        public async Task<LoginResponse> LoginWithOAuth2Async(string email, string name)
+        {
+            var userRepo = _unitOfWork.GetRepository<User>();
+            var userRoleRepo = _unitOfWork.GetRepository<Userrole>();
+            var user = await userRepo.SingleOrDefaultAsync(
+                predicate: u => u.Email == email
+            );
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    UserId = Guid.NewGuid(),
+                    Email = email,
+                    Name = name,
+                    IsActive = true,
+                };
+                await userRepo.InsertAsync(user);
+
+                var userRole = new Userrole
+                {
+                    RoleId = Guid.NewGuid(),
+                    UserId = user.UserId,
+                    RoleName = "Student"
+                };
+                await userRoleRepo.InsertAsync(userRole);
+            }
+
+            var userRoles = await userRoleRepo.GetListAsync(
+                predicate: r => r.UserId == user.UserId,
+                orderBy: null,
+                include: null
+            );
+            var roleNames = userRoles.Select(r => r.RoleName).ToList();
+
+            var token = _jwtUtil.GenerateJwtToken(user, roleNames);
+            var refreshToken = await _refreshTokensService.GenerateAndStoreRefreshToken(user.UserId);
+
+            return new LoginResponse
+            {
+                AccessToken = token,
+                RefreshToken = refreshToken
+            };
         }
     }
 }

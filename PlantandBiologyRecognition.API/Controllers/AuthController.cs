@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using System.Security.Claims;
 using PlantandBiologyRecognition.API.Constants;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
@@ -72,7 +75,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-        
+
         [HttpPost(ApiEndPointConstant.Auth.LogOut)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -96,6 +99,27 @@ namespace PlantandBiologyRecognition.API.Controllers
                     ex.Message
                 ));
             }
+        }
+
+        [HttpGet("oauth2/google-login")]
+        public IActionResult GoogleLogin(string returnUrl = "/")
+        {
+            var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse", new { returnUrl }) };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("oauth2/google-response")]
+        public async Task<IActionResult> GoogleResponse(string returnUrl = "/")
+        {
+            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            if (!authenticateResult.Succeeded)
+                return BadRequest("External authentication failed.");
+
+            var email = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var name = authenticateResult.Principal.FindFirst(ClaimTypes.Name)?.Value;
+
+            var loginResponse = await _authService.LoginWithOAuth2Async(email, name);
+            return Ok(loginResponse);
         }
     }
 }
