@@ -7,5 +7,6 @@ namespace PlantandBiologyRecognition.BLL.Services.Interfaces
     public interface IAuthService
     {
         Task<LoginResponse> Login(LoginRequest loginRequest);
+        Task<LoginResponse> LoginWithOAuth2Async(string email, string name);
     }
 }
