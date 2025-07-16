@@ -40,6 +40,9 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             if (user == null)
                 throw new NotFoundException($"User with email {loginRequest.Email} not found.");
 
+            if (string.IsNullOrEmpty(user.PasswordHash))
+                throw new WrongPasswordException("This account does not support password login. Please login via Google.");
+
             if (!PasswordUtil.VerifyPassword(loginRequest.Password, user.PasswordHash))
                 throw new WrongPasswordException("Invalid password");
 
@@ -61,6 +64,10 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
 
         public async Task<LoginResponse> LoginWithOAuth2Async(string email, string name)
         {
+            if (string.IsNullOrEmpty(email))
+                throw new ArgumentException("Email cannot be null or empty", nameof(email));
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("Name cannot be null or empty", nameof(name));
             var userRepo = _unitOfWork.GetRepository<User>();
             var userRoleRepo = _unitOfWork.GetRepository<Userrole>();
             var user = await userRepo.SingleOrDefaultAsync(
@@ -75,6 +82,7 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                     Email = email,
                     Name = name,
                     IsActive = true,
+                    PasswordHash = ""
                 };
                 await userRepo.InsertAsync(user);
 
