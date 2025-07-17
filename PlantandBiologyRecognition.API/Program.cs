@@ -88,7 +88,7 @@ void ConfigureServices()
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-        options.CallbackPath = "/api/auth/oauth2/google-response";
+        options.CallbackPath = "/api/v1/oauth2/google-response";
     })
     .AddCookie();
 

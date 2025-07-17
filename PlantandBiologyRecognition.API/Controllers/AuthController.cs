@@ -101,7 +101,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             }
         }
 
-        [HttpGet("oauth2/google-login")]
+        [HttpGet(ApiEndPointConstant.Auth.LoginGoogle)]
         public IActionResult GoogleLogin(string returnUrl = "/")
         {
             if (!string.IsNullOrEmpty(returnUrl) && !Url.IsLocalUrl(returnUrl))
@@ -112,7 +112,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
-        [HttpGet("oauth2/google-response")]
+        [HttpGet(ApiEndPointConstant.Auth.GoogleResponse)]
         public async Task<IActionResult> GoogleResponse(string returnUrl = "/")
         {
             try
