@@ -21,13 +21,14 @@ using PlantandBiologyRecognition.DAL.MetaDatas;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
 // Ensure services are registered before building the host
 ConfigureServices();
 ConfigureDatabase();
 ConfigureSwagger();
 
 var app = builder.Build();
-
+app.UseRouting();
 app.UseCors(options =>
 {
     options.SetIsOriginAllowed(origin =>
@@ -39,6 +40,7 @@ app.UseCors(options =>
           .AllowCredentials();
 });
 
+app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -90,7 +92,12 @@ void ConfigureServices()
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
         options.CallbackPath = "/api/v1/auth/google-response";
     })
-    .AddCookie();
+    .AddCookie(options =>
+    {
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.HttpOnly = true;
+    });
 
     builder.Services.AddControllers()
     .AddJsonOptions(options =>
