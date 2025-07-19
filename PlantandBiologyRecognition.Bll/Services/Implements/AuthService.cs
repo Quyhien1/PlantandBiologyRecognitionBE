@@ -1,4 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
@@ -8,9 +14,6 @@ using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Payload.Request.Auth;
 using PlantandBiologyRecognition.DAL.Payload.Respond.Auth;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PlantandBiologyRecognition.BLL.Services.Implements
 {
@@ -111,5 +114,17 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                 RefreshToken = refreshToken
             };
         }
+        public async Task<LoginResponse> HandleGoogleLoginAsync()
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            var authenticateResult = await httpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+            var email = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var name = authenticateResult.Principal.FindFirst(ClaimTypes.Name)?.Value;
+
+            return await LoginWithOAuth2Async(email, name);
+        }
+
     }
 }
