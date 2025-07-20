@@ -114,17 +114,5 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                 RefreshToken = refreshToken
             };
         }
-        public async Task<LoginResponse> HandleGoogleLoginAsync()
-        {
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            var authenticateResult = await httpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-
-            var email = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
-            var name = authenticateResult.Principal.FindFirst(ClaimTypes.Name)?.Value;
-
-            return await LoginWithOAuth2Async(email, name);
-        }
-
     }
 }
