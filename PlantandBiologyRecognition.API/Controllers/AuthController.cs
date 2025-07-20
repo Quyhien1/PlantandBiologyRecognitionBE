@@ -103,26 +103,53 @@ namespace PlantandBiologyRecognition.API.Controllers
         }
 
 
-        [HttpGet(ApiEndPointConstant.Auth.LoginGoogle)]
+        [HttpGet("oauth2/google-login")]
         public IActionResult GoogleLogin(string returnUrl = "/")
         {
             if (!string.IsNullOrEmpty(returnUrl) && !Url.IsLocalUrl(returnUrl))
             {
                 returnUrl = "/";
             }
-            var properties = new AuthenticationProperties
-            {
-                RedirectUri = Url.ActionLink(nameof(GoogleResponse), null, new { returnUrl })
-            };
+            var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse", new { returnUrl }) };
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
-        [HttpGet(ApiEndPointConstant.Auth.GoogleResponse)]
+        [HttpGet("oauth2/google-response")]
         public async Task<IActionResult> GoogleResponse(string returnUrl = "/")
         {
             try
             {
-                var loginResponse = await _authService.HandleGoogleLoginAsync();
+                var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+                if (!authenticateResult.Succeeded)
+                {
+                    return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                        null,
+                        StatusCodes.Status400BadRequest,
+                        "External authentication failed",
+                        authenticateResult.Failure?.Message ?? "Unknown authentication error"
+                    ));
+                }
+                var email = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
+                var name = authenticateResult.Principal.FindFirst(ClaimTypes.Name)?.Value;
+                if (string.IsNullOrEmpty(email))
+                {
+                    return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                        null,
+                        StatusCodes.Status400BadRequest,
+                        "Email claim missing",
+                        "Email claim is required for OAuth2 login"
+                    ));
+                }
+                if (string.IsNullOrEmpty(name))
+                {
+                    return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                        null,
+                        StatusCodes.Status400BadRequest,
+                        "Name claim missing",
+                        "Name claim is required for OAuth2 login"
+                    ));
+                }
+                var loginResponse = await _authService.LoginWithOAuth2Async(email, name);
                 return Ok(ApiResponseBuilder.BuildResponse(
                     StatusCodes.Status200OK,
                     "OAuth2 login successful",
@@ -134,7 +161,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
                     null,
                     StatusCodes.Status400BadRequest,
-                    "Unexpected error",
+                    "OAuth2 login failed",
                     ex.Message
                 ));
             }
