@@ -10,6 +10,9 @@
             public const string Login = "auth/login";
             public const string RefreshToken = "auth/refresh-token";
             public const string LogOut = "auth/log-out";
+            public const string SendOtp = "send-otp";
+            public const string ResetPasswordWithOtp = "reset-password";
+            public const string ForgotPassword = "auth/forgot-password";
         }
         public static class Users
         {
@@ -91,5 +94,11 @@
             public const string GetAllSavedSamples = SavedSampleEndpoint + "/all";
         }
         
+        public static class Email
+        {
+            public const string EmailEndpoint = ApiEndPoint + "/email";
+            public const string SendOtp = EmailEndpoint + "/send-otp";
+            public const string VerifyOtp = EmailEndpoint + "/verify-otp";
+        }
     }
 }
