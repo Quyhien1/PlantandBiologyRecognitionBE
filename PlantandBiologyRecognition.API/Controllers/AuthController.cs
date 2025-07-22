@@ -1,9 +1,14 @@
+using Google.Apis.Gmail.v1;
 using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
+using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.DAL.MetaDatas;
+using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Payload.Request.Auth;
+using PlantandBiologyRecognition.DAL.Payload.Request.Email;
 using PlantandBiologyRecognition.DAL.Payload.Respond.Auth;
+using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 using static PlantandBiologyRecognition.API.Constants.ApiEndPointConstant;
 
 namespace PlantandBiologyRecognition.API.Controllers
@@ -12,15 +17,24 @@ namespace PlantandBiologyRecognition.API.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IRefreshTokensService _refreshTokensService;
+        private readonly IEmailService _emailService;
+        private readonly IOtpService _otpService;
+        private readonly IUnitOfWork<AppDbContext> _unitOfWork;
 
         public AuthController(
             IAuthService authService,
             IRefreshTokensService refreshTokensService,
+            IEmailService emailService,
+            IOtpService otpService,
+            IUnitOfWork<AppDbContext> unitOfWork,
             ILogger<AuthController> logger)
             : base(logger)
         {
             _authService = authService;
             _refreshTokensService = refreshTokensService;
+            _emailService = emailService;
+            _otpService = otpService;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost(ApiEndPointConstant.Auth.Login)]
@@ -97,5 +111,105 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
+
+        [HttpPost(ApiEndPointConstant.Auth.ResetPasswordWithOtp)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ResetPasswordWithOtp([FromBody] ResetPasswordWithOtpRequest request)
+        {
+            try
+            {
+                var otpValidation = await _otpService.ValidateOtp(request.Email, request.OtpCode);
+                if (!otpValidation.Success)
+                {
+                    return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                        null,
+                        StatusCodes.Status400BadRequest,
+                        "Invalid or expired OTP",
+                        $"Attempts left: {otpValidation.AttemptsLeft}"
+                    ));
+                }
+
+                var userRepo = _unitOfWork.GetRepository<User>();
+                var user = await userRepo.SingleOrDefaultAsync(
+                    predicate: u => u.Email == request.Email
+                );
+                if (user == null)
+                {
+                    return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                        null,
+                        StatusCodes.Status400BadRequest,
+                        "User not found",
+                        "No user exists with the provided email"
+                    ));
+                }
+
+                // Hashing logic — replace this with your actual hashing function
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+                 userRepo.UpdateAsync(user);
+                await _unitOfWork.CommitAsync();
+
+                return Ok(ApiResponseBuilder.BuildResponse<object>(
+                    StatusCodes.Status200OK,
+                    "Password reset successful",
+                    null
+                ));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null,
+                    StatusCodes.Status400BadRequest,
+                    "Password reset failed",
+                    ex.Message
+                ));
+            }
+        }
+
+        [HttpPost(ApiEndPointConstant.Auth.ForgotPassword)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            try
+            {
+                // Check if user exists
+                var userRepo = _unitOfWork.GetRepository<User>();
+                var user = await userRepo.SingleOrDefaultAsync(predicate: u => u.Email == request.Email);
+
+                if (user == null)
+                {
+                    return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                        null,
+                        StatusCodes.Status400BadRequest,
+                        "Email not registered",
+                        "No user found with this email."
+                    ));
+                }
+
+                // Send OTP email
+                await _emailService.SendOtpEmailAsync(new SendOtpEmailRequest
+                {
+                    Email = request.Email
+                });
+
+                return Ok(ApiResponseBuilder.BuildResponse<object>(
+                    StatusCodes.Status200OK,
+                    "OTP sent to your email. Use it to reset your password.",
+                    null
+                ));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null,
+                    StatusCodes.Status500InternalServerError,
+                    "Failed to send OTP for password reset.",
+                    ex.Message
+                ));
+            }
+        }
+
     }
 }
