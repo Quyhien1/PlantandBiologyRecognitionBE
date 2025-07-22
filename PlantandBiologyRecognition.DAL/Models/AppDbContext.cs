@@ -39,6 +39,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Userrole> Userroles { get; set; }
 
+    public virtual DbSet<Otp> Otps { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder

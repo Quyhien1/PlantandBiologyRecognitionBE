@@ -19,6 +19,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using PlantandBiologyRecognition.DAL.MetaDatas;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
@@ -128,16 +129,20 @@ void RegisterApplicationServices()
     builder.Services.AddScoped<ILearningTipService, LearningTipService>();
     builder.Services.AddScoped<IUserRoleService, UserRoleService>();
     builder.Services.AddScoped<IUserService, UserService>();
-    // builder.Services.AddScoped<ITextbooklinkService, TextbooklinkService>();
+    builder.Services.AddScoped<ITextbooklinkService, TextbooklinkService>();
     builder.Services.AddScoped<ISampleService, SampleService>();
     builder.Services.AddScoped<ISampleDetailService, SampleDetailService>();
     builder.Services.AddScoped<ISampleImageService, SampleImageService>();
     builder.Services.AddScoped<ISavedSampleService, SavedSampleService>();
-    // Register your service so it can resolve dependencies
     builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
     builder.Services.AddScoped<JwtUtil>();
     builder.Services.AddScoped<IRefreshTokensService, RefreshTokensService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<IEmailService, EmailService>();
+    builder.Services.AddScoped<OtpUtil>();
+    builder.Services.AddScoped<IOtpService, OtpService>();
+
+
 }
 
 void ConfigureSwagger()
