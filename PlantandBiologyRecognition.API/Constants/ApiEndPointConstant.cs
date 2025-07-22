@@ -10,6 +10,8 @@
             public const string Login = "auth/login";
             public const string RefreshToken = "auth/refresh-token";
             public const string LogOut = "auth/log-out";
+            public const string LoginGoogle = "auth/login-google";
+            public const string GoogleResponse = "auth/google-response";
             public const string SendOtp = "send-otp";
             public const string ResetPasswordWithOtp = "reset-password";
             public const string ForgotPassword = "auth/forgot-password";

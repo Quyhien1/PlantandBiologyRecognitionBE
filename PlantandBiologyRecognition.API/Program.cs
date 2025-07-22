@@ -1,9 +1,13 @@
+using System.Text;
+using System.Text.Json.Serialization;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using PlantandBiologyRecognition.BLL.Services.Implements;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
 using PlantandBiologyRecognition.BLL.Utils;
@@ -11,18 +15,21 @@ using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Repositories.Implements;
 using PlantandBiologyRecognition.DAL.Repositories.Interfaces;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using PlantandBiologyRecognition.DAL.MetaDatas;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
 // Ensure services are registered before building the host
 ConfigureServices();
 ConfigureDatabase();
 ConfigureSwagger();
 
 var app = builder.Build();
-
+app.UseRouting();
 app.UseCors(options =>
 {
     options.SetIsOriginAllowed(origin =>
@@ -33,20 +40,19 @@ app.UseCors(options =>
           .AllowAnyHeader()
           .AllowCredentials();
 });
+
+app.UseCookiePolicy();
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Update the ConfigureServices method to fix the error
 void ConfigureServices()
 {
-    builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
-
-    RegisterApplicationServices();
-
     builder.Services.AddAuthentication(options =>
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
     })
     .AddJwtBearer(options =>
     {
@@ -61,9 +67,47 @@ void ConfigureServices()
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
         };
-    });
-}
 
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+
+                var result = JsonSerializer.Serialize(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null,
+                    StatusCodes.Status401Unauthorized,
+                    "Unauthorized",
+                    "Invalid or missing authentication token"
+                ));
+
+                return context.Response.WriteAsync(result);
+            }
+        };
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+        options.CallbackPath = "/api/v1/auth/google-response";
+        options.SaveTokens = true;
+
+    })
+    .AddCookie(options =>
+    {
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
+
+    builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+    RegisterApplicationServices();
+}
 
 //if (app.Environment.IsDevelopment())
 //{
@@ -71,8 +115,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 //}
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
