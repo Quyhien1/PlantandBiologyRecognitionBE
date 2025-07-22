@@ -129,32 +129,25 @@ namespace PlantandBiologyRecognition.API.Controllers
                         authenticateResult.Failure?.Message ?? "Unknown authentication error"
                     ));
                 }
+
                 var email = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
                 var name = authenticateResult.Principal.FindFirst(ClaimTypes.Name)?.Value;
-                if (string.IsNullOrEmpty(email))
+
+                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(name))
                 {
                     return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
                         null,
                         StatusCodes.Status400BadRequest,
-                        "Email claim missing",
-                        "Email claim is required for OAuth2 login"
+                        "Missing required claims",
+                        "Email and Name claims are required"
                     ));
                 }
-                if (string.IsNullOrEmpty(name))
-                {
-                    return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
-                        null,
-                        StatusCodes.Status400BadRequest,
-                        "Name claim missing",
-                        "Name claim is required for OAuth2 login"
-                    ));
-                }
+
                 var loginResponse = await _authService.LoginWithOAuth2Async(email, name);
-                return Ok(ApiResponseBuilder.BuildResponse(
-                    StatusCodes.Status200OK,
-                    "OAuth2 login successful",
-                    loginResponse
-                ));
+
+                var redirectUrl = $"http://localhost:3000/dashboard?token={Uri.EscapeDataString(loginResponse.AccessToken)}";
+                return Redirect(redirectUrl);
+
             }
             catch (Exception ex)
             {
