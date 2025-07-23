@@ -9,5 +9,6 @@ namespace PlantandBiologyRecognition.BLL.Services.Interfaces
     {
         Task<LoginResponse> Login(LoginRequest loginRequest);
         Task<LoginResponse> LoginWithOAuth2Async(string email, string name);
+        Task<LoginResponse> LoginWithGoogleIdTokenAsync(string idToken);
     }
 }

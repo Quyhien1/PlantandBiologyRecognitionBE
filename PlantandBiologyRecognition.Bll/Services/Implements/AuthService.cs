@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Http;
@@ -114,5 +115,71 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
                 RefreshToken = refreshToken
             };
         }
+        public async Task<LoginResponse> LoginWithGoogleIdTokenAsync(string idToken)
+        {
+            GoogleJsonWebSignature.Payload payload;
+            try
+            {
+                payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+            }
+            catch (InvalidJwtException)
+            {
+                throw new UnauthorizedAccessException("Invalid Google token");
+            }
+
+            var email = payload.Email;
+            var name = payload.Name;
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Google token missing required fields (email or name)");
+            }
+
+            var userRepo = _unitOfWork.GetRepository<User>();
+            var userRoleRepo = _unitOfWork.GetRepository<Userrole>();
+
+            var user = await userRepo.SingleOrDefaultAsync(
+                predicate: u => u.Email == email
+            );
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    UserId = Guid.NewGuid(),
+                    Email = email,
+                    Name = name,
+                    IsActive = true,
+                    PasswordHash = ""
+                };
+
+                await userRepo.InsertAsync(user);
+
+                var userRole = new Userrole
+                {
+                    RoleId = Guid.NewGuid(),
+                    UserId = user.UserId,
+                    RoleName = "Student"
+                };
+                await userRoleRepo.InsertAsync(userRole);
+            }
+
+            var userRoles = await userRoleRepo.GetListAsync(
+                predicate: r => r.UserId == user.UserId,
+                orderBy: null,
+                include: null
+            );
+            var roleNames = userRoles.Select(r => r.RoleName).ToList();
+
+            var token = _jwtUtil.GenerateJwtToken(user, roleNames);
+            var refreshToken = await _refreshTokensService.GenerateAndStoreRefreshToken(user.UserId);
+
+            return new LoginResponse
+            {
+                AccessToken = token,
+                RefreshToken = refreshToken
+            };
+        }
+
     }
 }
