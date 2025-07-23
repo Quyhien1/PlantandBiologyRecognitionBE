@@ -10,10 +10,11 @@ using PlantandBiologyRecognition.DAL.Payload.Respond.Sample;
 
 namespace PlantandBiologyRecognition.API.Controllers
 {
+    [ApiController]
     public class SampleController : BaseController<SampleController>
     {
         private readonly ISampleService _sampleService;
-
+        
         public SampleController(ISampleService sampleService, ILogger<SampleController> logger)
             : base(logger)
         {
@@ -61,6 +62,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
+
         [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.Samples.GetAllSamples)]
         [ProducesResponseType(typeof(ApiResponse<List<GetSampleRespond>>), StatusCodes.Status200OK)]
@@ -69,7 +71,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             var response = await _sampleService.GetAllSamples(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(200, "All samples retrieved", response));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPut(ApiEndPointConstant.Samples.UpdateSample)]
         [ProducesResponseType(typeof(ApiResponse<UpdateSampleRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

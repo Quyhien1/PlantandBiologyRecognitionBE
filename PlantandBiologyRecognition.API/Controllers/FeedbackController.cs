@@ -11,6 +11,7 @@ using PlantandBiologyRecognition.DAL.Payload.Respond.Feedback;
 
 namespace PlantandBiologyRecognition.API.Controllers
 {
+    [ApiController]
     public class FeedbackController : BaseController<FeedbackController>
     {
         private readonly IFeedbackService _feedbackService;
@@ -71,6 +72,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             return Ok(ApiResponseBuilder.BuildResponse(200, "All feedbacks retrieved", response));
         }
 
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpPut(ApiEndPointConstant.Feedbacks.UpdateFeedback)]
         [ProducesResponseType(typeof(ApiResponse<UpdateFeedbackRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -88,7 +90,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-        [CustomAuthorize(RoleName.Admin)]
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpDelete(ApiEndPointConstant.Feedbacks.DeleteFeedback)]
         [ProducesResponseType(typeof(ApiResponse<DeleteFeedbackRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

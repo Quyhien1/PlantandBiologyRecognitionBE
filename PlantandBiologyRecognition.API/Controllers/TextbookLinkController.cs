@@ -9,7 +9,6 @@ using PlantandBiologyRecognition.DAL.Payload.Request.TextbookLink;
 namespace PlantandBiologyRecognition.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     public class TextbooklinkController : ControllerBase
     {
         private readonly ITextbooklinkService _service;

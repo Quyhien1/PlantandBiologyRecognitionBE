@@ -11,6 +11,7 @@ using PlantandBiologyRecognition.DAL.Payload.Respond.Category;
 
 namespace PlantandBiologyRecognition.API.Controllers
 {
+    [ApiController]
     public class CategoryController : BaseController<CategoryController>
     {
         private readonly ICategoryService _categoryService;
@@ -71,6 +72,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             return Ok(ApiResponseBuilder.BuildResponse(200, "All categories retrieved", response));
         }
 
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPut(ApiEndPointConstant.Categories.UpdateCategory)]
         [ProducesResponseType(typeof(ApiResponse<UpdateCategoryRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -89,6 +91,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             }
         }
 
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpDelete(ApiEndPointConstant.Categories.DeleteCategory)]
         [ProducesResponseType(typeof(ApiResponse<DeleteCategoryRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
