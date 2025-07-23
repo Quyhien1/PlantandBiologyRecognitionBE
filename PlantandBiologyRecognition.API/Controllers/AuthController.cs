@@ -273,5 +273,30 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
+
+        [HttpPost("google-login-idtoken")]
+        [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GoogleLoginWithIdToken([FromBody] GoogleLoginRequest request)
+        {
+            try
+            {
+                var result = await _authService.LoginWithGoogleIdTokenAsync(request.IdToken);
+                return Ok(ApiResponseBuilder.BuildResponse(
+                    StatusCodes.Status200OK,
+                    "Google login successful",
+                    result
+                ));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null,
+                    StatusCodes.Status400BadRequest,
+                    "Google login failed",
+                    ex.Message
+                ));
+            }
+        }
     }
 }
