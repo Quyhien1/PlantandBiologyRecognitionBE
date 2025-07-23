@@ -11,6 +11,7 @@ using PlantandBiologyRecognition.DAL.Payload.Respond.SampleDetail;
 
 namespace PlantandBiologyRecognition.API.Controllers
 {
+    [ApiController]
     public class SampleDetailController : BaseController<SampleDetailController>
     {
         private readonly ISampleDetailService _sampleDetailService;
@@ -70,7 +71,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             var response = await _sampleDetailService.GetAllSampleDetails(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(200, "All sample details retrieved", response));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPut(ApiEndPointConstant.SampleDetails.UpdateSampleDetail)]
         [ProducesResponseType(typeof(ApiResponse<UpdateSampleDetailRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

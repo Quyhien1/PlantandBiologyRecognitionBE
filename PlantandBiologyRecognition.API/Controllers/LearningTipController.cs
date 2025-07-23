@@ -11,6 +11,7 @@ using PlantandBiologyRecognition.DAL.Payload.Respond.LearningTip;
 
 namespace PlantandBiologyRecognition.API.Controllers
 {
+    [ApiController]
     public class LearningTipController : BaseController<LearningTipController>
     {
         private readonly ILearningTipService _learningTipService;
@@ -71,6 +72,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             return Ok(ApiResponseBuilder.BuildResponse(200, "All learning tips retrieved", response));
         }
 
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPut(ApiEndPointConstant.LearningTips.UpdateLearningTip)]
         [ProducesResponseType(typeof(ApiResponse<UpdateLearningTipRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -89,6 +91,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             }
         }
 
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpDelete(ApiEndPointConstant.LearningTips.DeleteLearningTip)]
         [ProducesResponseType(typeof(ApiResponse<DeleteLearningTipRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

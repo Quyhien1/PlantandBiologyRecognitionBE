@@ -20,7 +20,7 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             _savedSampleService = savedSampleService;
         }
-        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpPost(ApiEndPointConstant.SavedSamples.CreateSavedSample)]
         [ProducesResponseType(typeof(ApiResponse<CreateSavedSampleRespond>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -62,6 +62,7 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
+
         [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpGet(ApiEndPointConstant.SavedSamples.GetAllSavedSamples)]
         [ProducesResponseType(typeof(ApiResponse<List<GetSavedSampleRespond>>), StatusCodes.Status200OK)]
@@ -71,6 +72,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             return Ok(ApiResponseBuilder.BuildResponse(200, "All saved samples retrieved", response));
         }
 
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpPut(ApiEndPointConstant.SavedSamples.UpdateSavedSample)]
         [ProducesResponseType(typeof(ApiResponse<UpdateSavedSampleRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -88,7 +90,8 @@ namespace PlantandBiologyRecognition.API.Controllers
                 ));
             }
         }
-        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
+
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
         [HttpDelete(ApiEndPointConstant.SavedSamples.DeleteSavedSample)]
         [ProducesResponseType(typeof(ApiResponse<DeleteSavedSampleRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

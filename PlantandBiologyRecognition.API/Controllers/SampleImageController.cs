@@ -11,6 +11,7 @@ using PlantandBiologyRecognition.DAL.Payload.Respond.SampleImage;
 
 namespace PlantandBiologyRecognition.API.Controllers
 {
+    [ApiController]
     public class SampleImageController : BaseController<SampleImageController>
     {
         private readonly ISampleImageService _sampleImageService;
@@ -70,7 +71,7 @@ namespace PlantandBiologyRecognition.API.Controllers
             var response = await _sampleImageService.GetAllSampleImages(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(200, "All sample images retrieved", response));
         }
-
+        [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPut(ApiEndPointConstant.SampleImages.UpdateSampleImage)]
         [ProducesResponseType(typeof(ApiResponse<UpdateSampleImageRespond>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
