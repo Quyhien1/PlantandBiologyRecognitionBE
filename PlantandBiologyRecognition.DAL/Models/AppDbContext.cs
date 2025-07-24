@@ -13,13 +13,13 @@ public partial class AppDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Aitrainingjob> Aitrainingjobs { get; set; }
-
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
     public virtual DbSet<Learningtip> Learningtips { get; set; }
+
+    public virtual DbSet<Otp> Otps { get; set; }
 
     public virtual DbSet<Recognitionhistory> Recognitionhistories { get; set; }
 
@@ -39,8 +39,6 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Userrole> Userroles { get; set; }
 
-    public virtual DbSet<Otp> Otps { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -56,29 +54,6 @@ public partial class AppDbContext : DbContext
             .HasPostgresExtension("extensions", "uuid-ossp")
             .HasPostgresExtension("graphql", "pg_graphql")
             .HasPostgresExtension("vault", "supabase_vault");
-
-        modelBuilder.Entity<Aitrainingjob>(entity =>
-        {
-            entity.HasKey(e => e.JobId).HasName("aitrainingjobs_pkey");
-
-            entity.ToTable("aitrainingjobs", "plantandbiologyrecognition");
-
-            entity.Property(e => e.JobId)
-                .HasDefaultValueSql("gen_random_uuid()")
-                .HasColumnName("job_id");
-            entity.Property(e => e.FinishedAt)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("finished_at");
-            entity.Property(e => e.ModelVersion)
-                .HasColumnType("character varying")
-                .HasColumnName("model_version");
-            entity.Property(e => e.StartedAt)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("started_at");
-            entity.Property(e => e.Status)
-                .HasColumnType("character varying")
-                .HasColumnName("status");
-        });
 
         modelBuilder.Entity<Category>(entity =>
         {
@@ -117,6 +92,7 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("feedbacks_user_id_fkey");
         });
 
@@ -137,6 +113,25 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Sample).WithMany(p => p.Learningtips)
                 .HasForeignKey(d => d.SampleId)
                 .HasConstraintName("learningtips_sample_id_fkey");
+        });
+
+        modelBuilder.Entity<Otp>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("Otps_pkey");
+
+            entity.ToTable("Otps", "plantandbiologyrecognition");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("uuid_generate_v4()")
+                .HasColumnName("id");
+            entity.Property(e => e.AttemptLeft).HasColumnName("attemptleft");
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasColumnName("email");
+            entity.Property(e => e.ExpirationTime).HasColumnName("expirationtime");
+            entity.Property(e => e.OtpCode)
+                .IsRequired()
+                .HasColumnName("otpcode");
         });
 
         modelBuilder.Entity<Recognitionhistory>(entity =>
@@ -323,9 +318,7 @@ public partial class AppDbContext : DbContext
                 .IsRequired()
                 .HasColumnType("character varying")
                 .HasColumnName("name");
-            entity.Property(e => e.PasswordHash)
-                .IsRequired()
-                .HasColumnName("password_hash");
+            entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
         });
 
         modelBuilder.Entity<Userrole>(entity =>
@@ -333,8 +326,6 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.RoleId).HasName("userroles_pkey");
 
             entity.ToTable("userroles", "plantandbiologyrecognition");
-
-            entity.HasIndex(e => e.RoleName, "userroles_role_name_key").IsUnique();
 
             entity.Property(e => e.RoleId)
                 .HasDefaultValueSql("gen_random_uuid()")
@@ -347,7 +338,6 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Userroles)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("userroles_user_id_fkey");
         });
         modelBuilder.HasSequence<int>("seq_schema_version", "graphql").IsCyclic();

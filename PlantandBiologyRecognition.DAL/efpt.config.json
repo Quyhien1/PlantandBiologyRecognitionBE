@@ -15,10 +15,6 @@
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "plantandbiologyrecognition.aitrainingjobs",
-         "ObjectType": 0
-      },
-      {
          "Name": "plantandbiologyrecognition.categories",
          "ObjectType": 0
       },
@@ -28,6 +24,10 @@
       },
       {
          "Name": "plantandbiologyrecognition.learningtips",
+         "ObjectType": 0
+      },
+      {
+         "Name": "plantandbiologyrecognition.Otps",
          "ObjectType": 0
       },
       {
