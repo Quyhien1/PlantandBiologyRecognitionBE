@@ -79,9 +79,12 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
 
         public async Task<GetTextbooklinkRespond> GetTextbooklinkById(Guid id)
         {
-            var entity = await _unitOfWork.GetRepository<Textbooklink>().GetByIdAsync(id);
+            var entity = await _unitOfWork.GetRepository<Textbooklink>().SingleOrDefaultAsync(
+                predicate: x => x.SampleId == id
+            );
+            
             if (entity == null)
-                throw new NotFoundException("Textbooklink not found");
+                throw new NotFoundException("Textbooklink not found for this sample");
 
             return _mapper.Map<GetTextbooklinkRespond>(entity);
         }
