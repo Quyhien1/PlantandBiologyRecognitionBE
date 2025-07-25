@@ -8,6 +8,7 @@ namespace PlantandBiologyRecognition.BLL.Services.Interfaces
     {
         Task<CreateSampleRespond> CreateSample(CreateSampleRequest request);
         Task<GetSampleRespond> GetSampleById(Guid id);
+        Task<GetSampleRespond> GetSampleByName(string name);
         Task<IPaginate<GetSampleRespond>> GetAllSamples(int page = 1, int size = 10, string searchTerm = null);
         Task<UpdateSampleRespond> UpdateSample(UpdateSampleRequest request);
         Task<DeleteSampleRespond> DeleteSample(DeleteSampleRequest request);

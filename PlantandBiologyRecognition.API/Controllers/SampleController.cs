@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlantandBiologyRecognition.API.Constants;
 using PlantandBiologyRecognition.API.Validators;
 using PlantandBiologyRecognition.BLL.Services.Interfaces;
+using PlantandBiologyRecognition.DAL.Exceptions;
 using PlantandBiologyRecognition.DAL.MetaDatas;
 using PlantandBiologyRecognition.DAL.Models;
 using PlantandBiologyRecognition.DAL.Payload.Request.Sample;
@@ -70,6 +71,36 @@ namespace PlantandBiologyRecognition.API.Controllers
         {
             var response = await _sampleService.GetAllSamples(page, size, searchTerm);
             return Ok(ApiResponseBuilder.BuildResponse(200, "All samples retrieved", response));
+        }
+        [CustomAuthorize(RoleName.Admin, RoleName.Student, RoleName.Teacher)]
+        [HttpGet(ApiEndPointConstant.Samples.GetSampleByName)]
+        [ProducesResponseType(typeof(ApiResponse<GetSampleRespond>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetSampleByName([FromQuery] string name)
+        {
+            try
+            {
+                var response = await _sampleService.GetSampleByName(name);
+                return Ok(ApiResponseBuilder.BuildResponse(200, "Sample retrieved", response));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null, 400, ex.Message, "BadRequest"
+                ));
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null, 404, $"Sample with name '{name}' not found", "NotFound"
+                ));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, ApiResponseBuilder.BuildErrorResponse<object>(
+                    null, 500, "An error occurred while retrieving the sample", "InternalServerError"
+                ));
+            }
         }
         [CustomAuthorize(RoleName.Admin, RoleName.Teacher)]
         [HttpPut(ApiEndPointConstant.Samples.UpdateSample)]
