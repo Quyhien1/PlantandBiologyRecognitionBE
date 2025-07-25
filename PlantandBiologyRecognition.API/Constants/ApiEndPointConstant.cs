@@ -67,6 +67,7 @@
             public const string DeleteSample = SampleEndpoint + "/delete";
             public const string GetSampleById = SampleEndpoint + "/{id}";
             public const string GetAllSamples = SampleEndpoint + "/all";
+            public const string GetSampleByName = SampleEndpoint + "/name";
         }
         public static class SampleDetails
         {

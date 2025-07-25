@@ -44,6 +44,21 @@ namespace PlantandBiologyRecognition.BLL.Services.Implements
             return _mapper.Map<GetSampleRespond>(sample);
         }
 
+        public async Task<GetSampleRespond> GetSampleByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Sample name cannot be empty");
+                
+            var sample = await _unitOfWork.GetRepository<Sample>().SingleOrDefaultAsync(
+                predicate: x => x.Name.ToLower() == name.ToLower()
+            );
+                
+            if (sample == null)
+                throw new NotFoundException($"Sample with name '{name}' not found");
+                
+            return _mapper.Map<GetSampleRespond>(sample);
+        }
+
         public async Task<IPaginate<GetSampleRespond>> GetAllSamples(int page = 1, int size = 10, string searchTerm = null)
         {
             try
